@@ -226,11 +226,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .data-table th,
 .data-table td {
-  padding: 0.8rem 0.5rem;
+  padding: 0.6rem 0.4rem;
   text-align: left;
   border-bottom: 1px solid var(--border);
   white-space: nowrap; /* 絕對不換行 */
-  font-size: 0.95rem; /* 稍微縮小一點點以配合畫面 */
+  font-size: 0.9em; /* 縮小為 90% */
 }
 
 .data-table th {
