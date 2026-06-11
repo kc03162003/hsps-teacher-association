@@ -211,59 +211,45 @@ export default function AdminDashboard() {
       }
     });
 
-    let htmlContent = `
-    <html>
-    <head>
-      <title>${activeYear} 理監事選票</title>
-      <style>
-        body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 20px; color: #000; }
-        h1 { text-align: center; margin-bottom: 20px; font-size: 24px; }
-        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .category-box { border: 2px solid #000; padding: 10px; border-radius: 8px; page-break-inside: avoid; }
-        .category-title { font-weight: bold; font-size: 1.2em; border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 5px; text-align: center; }
-        .member-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed #ccc; padding-bottom: 4px; font-size: 14px; }
-        .checkbox { width: 16px; height: 16px; border: 1.5px solid #000; display: inline-block; margin-left: 10px; }
-        .member-info { display: flex; flex-direction: column; }
-        .unit-label { font-size: 10px; color: #555; }
-        @media print {
-          body { margin: 0; padding: 10px; }
-          .grid-container { grid-template-columns: repeat(4, 1fr); gap: 10px; }
-          @page { margin: 1cm; }
-        }
-      </style>
-    </head>
-    <body>
-      <h1>${activeYear} 海山國小校教師會理監事選票</h1>
-      <p style="text-align: center; margin-bottom: 20px;">請在欲票選的候選人右側方格內畫記或蓋章</p>
-      <div class="grid-container">
-    `;
-
     const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任'];
-    order.forEach(cat => {
-      if (groups[cat].length > 0) {
-        groups[cat].sort((a, b) => a.unit.localeCompare(b.unit) || a.name.localeCompare(b.name));
-        htmlContent += `
-        <div class="category-box">
-          <div class="category-title">${cat} (${groups[cat].length}人)</div>
-          ${groups[cat].map(f => `
-            <div class="member-item">
-              <div class="member-info">
-                <span style="font-weight: bold;">${f.name}</span>
-                <span class="unit-label">${f.unit}</span>
-              </div>
-              <div class="checkbox"></div>
-            </div>
-          `).join('')}
-        </div>
-        `;
-      }
-    });
+    const groupsHtml = order.map(cat => {
+      if (groups[cat].length === 0) return '';
+      groups[cat].sort((a, b) => a.unit.localeCompare(b.unit) || a.name.localeCompare(b.name));
+      
+      const membersHtml = groups[cat].map(f => 
+        '<div class="member-item">' +
+          '<div class="member-info">' +
+            '<span style="font-weight: bold;">' + f.name + '</span>' +
+            '<span class="unit-label">' + f.unit + '</span>' +
+          '</div>' +
+          '<div class="checkbox"></div>' +
+        '</div>'
+      ).join('');
 
-    htmlContent += `
-      </div>
-    </body>
-    </html>
-    `;
+      return '<div class="category-box">' +
+               '<div class="category-title">' + cat + ' (' + groups[cat].length + '人)</div>' +
+               membersHtml +
+             '</div>';
+    }).join('');
+
+    const htmlContent = '<!DOCTYPE html><html><head><title>' + activeYear + ' 理監事選票</title>' +
+      '<style>' +
+        'body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 20px; color: #000; } ' +
+        'h1 { text-align: center; margin-bottom: 20px; font-size: 24px; } ' +
+        '.grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; } ' +
+        '.category-box { border: 2px solid #000; padding: 10px; border-radius: 8px; page-break-inside: avoid; } ' +
+        '.category-title { font-weight: bold; font-size: 1.2em; border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 5px; text-align: center; } ' +
+        '.member-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed #ccc; padding-bottom: 4px; font-size: 14px; } ' +
+        '.checkbox { width: 16px; height: 16px; border: 1.5px solid #000; display: inline-block; margin-left: 10px; } ' +
+        '.member-info { display: flex; flex-direction: column; } ' +
+        '.unit-label { font-size: 10px; color: #555; } ' +
+        '@media print { body { margin: 0; padding: 10px; } .grid-container { grid-template-columns: repeat(4, 1fr); gap: 10px; } @page { margin: 1cm; } } ' +
+      '</style></head><body>' +
+      '<h1>' + activeYear + ' 海山國小校教師會理監事選票</h1>' +
+      '<p style="text-align: center; margin-bottom: 20px;">請在欲票選的候選人右側方格內畫記或蓋章</p>' +
+      '<div class="grid-container">' +
+      groupsHtml +
+      '</div></body></html>';
 
     const printWindow = window.open('', '_blank');
     printWindow.document.write(htmlContent);
