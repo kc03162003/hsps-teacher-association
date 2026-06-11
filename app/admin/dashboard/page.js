@@ -332,7 +332,9 @@ export default function AdminDashboard() {
             <option value="NTA">全教總</option>
           </select>
         </div>
-        <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleExport}>匯出 CSV</button>
+        {authLevel === 'super' && (
+          <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleExport}>匯出 CSV</button>
+        )}
       </div>
 
       {/* Edit Modal */}
