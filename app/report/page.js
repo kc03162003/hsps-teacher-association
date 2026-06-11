@@ -48,7 +48,8 @@ export default function ReportPage() {
           name: userData.name,
           associations: associations.join('、 '),
           totalFee: userData.totalFee,
-          isReconciled: userData.isReconciled || false
+          isReconciled: userData.isReconciled || false,
+          reconciledAt: userData.reconciledAt ? (userData.reconciledAt.toDate ? userData.reconciledAt.toDate().toLocaleDateString('zh-TW') : new Date(userData.reconciledAt).toLocaleDateString('zh-TW')) : null
         });
       }
     } catch (error) {
@@ -151,7 +152,7 @@ export default function ReportPage() {
               <span><strong>實收金額：</strong> 新台幣 <span style="font-size:1.5rem; font-weight:bold;">${searchResult.totalFee}</span> 元整</span>
             </div>
             <div class="row single">
-              <span><strong>對帳狀態：</strong> ✅ 已由系統核銷對帳</span>
+              <span><strong>對帳狀態：</strong> ✅ 已由系統核銷對帳 ${searchResult.reconciledAt ? `(對帳日期：${searchResult.reconciledAt})` : ''}</span>
             </div>
             <div class="footer">
               <p>收款單位：海山國小教師會</p>
@@ -204,7 +205,7 @@ export default function ReportPage() {
             <div style={{ margin: '0.5rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <p style={{ margin: 0 }}><strong>目前對帳狀態：</strong> 
                 {searchResult.isReconciled ? 
-                  <span style={{ color: '#059669', fontWeight: 'bold' }}>✅ 已完成對帳</span> : 
+                  <span style={{ color: '#059669', fontWeight: 'bold' }}>✅ 已完成對帳 {searchResult.reconciledAt ? `(${searchResult.reconciledAt})` : ''}</span> : 
                   <span style={{ color: '#ea580c', fontWeight: 'bold' }}>⏳ 尚未對帳 (或處理中)</span>
                 }
               </p>

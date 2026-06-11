@@ -90,12 +90,27 @@ export default function AdminDashboard() {
   const handleToggleReconcile = async (formId, currentStatus) => {
     if (authLevel !== 'super') return;
     try {
-      const { updateDoc, doc } = await import('firebase/firestore');
+      const { updateDoc, doc, serverTimestamp } = await import('firebase/firestore');
       const { db } = await import('@/lib/firebase');
-      await updateDoc(doc(db, 'teacher_association_forms', formId), {
-        isReconciled: !currentStatus
-      });
-      setForms(prev => prev.map(f => f.id === formId ? { ...f, isReconciled: !currentStatus } : f));
+      
+      const updateData = { isReconciled: !currentStatus };
+      if (!currentStatus) {
+        updateData.reconciledAt = serverTimestamp();
+      } else {
+        updateData.reconciledAt = null;
+      }
+      
+      await updateDoc(doc(db, 'teacher_association_forms', formId), updateData);
+      setForms(prev => prev.map(f => {
+        if (f.id === formId) {
+          return { 
+            ...f, 
+            isReconciled: !currentStatus, 
+            reconciledAt: !currentStatus ? new Date().toISOString() : null 
+          };
+        }
+        return f;
+      }));
     } catch (error) {
       console.error('Error updating reconciliation status:', error);
       alert('更新對帳狀態失敗，請重試。');
