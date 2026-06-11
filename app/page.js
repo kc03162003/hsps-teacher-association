@@ -54,8 +54,8 @@ export default function Home() {
       // Calculate fee
       let fee = 0;
       if (newData.joinHaishan) fee += 200;
-      if (newData.joinNFEU) fee += 1000;
-      if (newData.joinNTA) fee += 200;
+      if (newData.joinNTA) fee += 1000; // 全教總
+      if (newData.joinNFEU) fee += 200; // 全教產
       setCalculatedFee(fee);
       
       return newData;
@@ -182,15 +182,15 @@ export default function Home() {
           <label className="form-label">選擇加入的教師會（可複選）</label>
           <label className="checkbox-group">
             <input type="checkbox" name="joinHaishan" checked={formData.joinHaishan} onChange={handleChange} />
-            <span>海山校教師會 (200元)</span>
-          </label>
-          <label className="checkbox-group">
-            <input type="checkbox" name="joinNFEU" checked={formData.joinNFEU} onChange={handleChange} />
-            <span>全教產 (1000元)</span>
+            <span>海山國小校教師會（會費200元）</span>
           </label>
           <label className="checkbox-group">
             <input type="checkbox" name="joinNTA" checked={formData.joinNTA} onChange={handleChange} />
-            <span>全教總 (200元)</span>
+            <span>全教總（全教總+新北教產+市教師會）（會費1000元）</span>
+          </label>
+          <label className="checkbox-group">
+            <input type="checkbox" name="joinNFEU" checked={formData.joinNFEU} onChange={handleChange} />
+            <span>全教產（全教產+雙北教產）（會費200元）</span>
           </label>
           <label className="checkbox-group" style={{ marginTop: '0.5rem', borderStyle: 'dashed' }}>
             <input type="checkbox" name="joinNone" checked={formData.joinNone} onChange={handleChange} />
