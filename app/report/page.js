@@ -8,6 +8,7 @@ export default function ReportPage() {
     name: '',
     paidAmount: '',
     accountLastFive: '',
+    transferDate: new Date().toISOString().split('T')[0],
   });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,7 +62,7 @@ export default function ReportPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.paidAmount || !formData.accountLastFive) {
+    if (!formData.name || !formData.paidAmount || !formData.accountLastFive || !formData.transferDate) {
       return alert('請填寫完整資訊');
     }
     
@@ -93,7 +94,8 @@ export default function ReportPage() {
 
       await updateDoc(doc(db, 'teacher_association_forms', userDoc.id), {
         paidAmount: parseInt(formData.paidAmount),
-        accountLastFive: formData.accountLastFive
+        accountLastFive: formData.accountLastFive,
+        transferDate: formData.transferDate
       });
       
       setSubmitted(true);
@@ -220,7 +222,18 @@ export default function ReportPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-1 mt-1">
+        <div className="grid grid-cols-3 gap-1 mt-1">
+          <div className="form-group">
+            <label className="form-label">匯款日期</label>
+            <input 
+              type="date" 
+              name="transferDate" 
+              className="form-input" 
+              value={formData.transferDate}
+              onChange={handleChange}
+              required
+            />
+          </div>
           <div className="form-group">
             <label className="form-label">已繳金額</label>
             <input 

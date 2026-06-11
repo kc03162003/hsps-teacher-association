@@ -17,6 +17,7 @@ export default function AdminDashboard() {
   const [availableYears, setAvailableYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState('');
   const [newYearInput, setNewYearInput] = useState('');
+  const [filterDate, setFilterDate] = useState('');
 
   const getFormYear = (f) => typeof f.year === 'object' ? f.year.name : (f.year || '未指定');
 
@@ -150,6 +151,7 @@ export default function AdminDashboard() {
         joinNone: editingForm.joinNone,
         totalFee: parseInt(editingForm.totalFee) || 0,
         paidAmount: editingForm.paidAmount === '' || editingForm.paidAmount === null ? null : parseInt(editingForm.paidAmount),
+        transferDate: editingForm.transferDate || '',
         accountLastFive: editingForm.accountLastFive || ''
       };
 
@@ -163,16 +165,16 @@ export default function AdminDashboard() {
   };
 
   const handleExport = () => {
-    const headers = ['ID', '學年度', '單位', '姓名', '海山校教師會', '全教產', '全教總', '不加入', '應繳金額', '已繳金額', '帳號後五碼', '登記時間'];
+    const headers = ['ID', '學年度', '單位', '姓名', '海山校教師會', '全教產', '全教總', '不加入', '應繳金額', '已繳金額', '匯款日期', '帳號後五碼', '登記時間'];
     const csvContent = [
       headers.join(','),
       ...filteredForms.map(f => [
-        f.id, f.year?.name || '', f.unit, f.name, 
+        f.id, f.year?.name || f.year || '', f.unit, f.name, 
         f.joinHaishan ? '是' : '否', 
         f.joinNFEU ? '是' : '否', 
         f.joinNTA ? '是' : '否', 
         (!f.joinHaishan && !f.joinNFEU && !f.joinNTA) ? '是' : '否',
-        f.totalFee, f.paidAmount || 0, f.accountLastFive || '',
+        f.totalFee, f.paidAmount || 0, f.transferDate || '', f.accountLastFive || '',
         new Date(f.createdAt).toLocaleString()
       ].join(','))
     ].join('\n');
@@ -192,6 +194,7 @@ export default function AdminDashboard() {
   const filteredForms = forms.filter(f => {
     const formYear = getFormYear(f);
     if (selectedYear !== 'ALL' && formYear !== selectedYear) return false;
+    if (filterDate && f.transferDate !== filterDate) return false;
 
     // Apply type filter
     if (filter === 'UNPAID' && (f.paidAmount === null || f.paidAmount < f.totalFee)) return true;
@@ -295,6 +298,14 @@ export default function AdminDashboard() {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
+          <input 
+            type="date" 
+            className="form-input" 
+            value={filterDate}
+            onChange={e => setFilterDate(e.target.value)}
+            style={{ width: 'auto' }}
+            title="依匯款日期篩選"
+          />
           <select className="form-input" value={selectedYear} onChange={e => setSelectedYear(e.target.value)} style={{ width: 'auto', minWidth: '130px' }}>
             <option value="ALL">全部學年度</option>
             {availableYears.map(y => <option key={y} value={y}>{y}{y === activeYear ? ' (啟用)' : ''}</option>)}
@@ -346,9 +357,15 @@ export default function AdminDashboard() {
                 <input type="number" className="form-input" value={editingForm.paidAmount === null ? '' : editingForm.paidAmount} onChange={e => setEditingForm({...editingForm, paidAmount: e.target.value})} placeholder="尚未繳費" />
               </div>
             </div>
-            <div className="form-group">
-              <label className="form-label">帳號後五碼</label>
-              <input className="form-input" value={editingForm.accountLastFive || ''} onChange={e => setEditingForm({...editingForm, accountLastFive: e.target.value})} />
+            <div className="grid grid-cols-2 gap-1 mt-1">
+              <div className="form-group">
+                <label className="form-label">匯款日期</label>
+                <input type="date" className="form-input" value={editingForm.transferDate || ''} onChange={e => setEditingForm({...editingForm, transferDate: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">帳號後五碼</label>
+                <input className="form-input" value={editingForm.accountLastFive || ''} onChange={e => setEditingForm({...editingForm, accountLastFive: e.target.value})} />
+              </div>
             </div>
             <div className="flex gap-1 mt-2">
               <button className="btn btn-primary" onClick={handleSaveEdit}>儲存修改</button>
@@ -371,6 +388,7 @@ export default function AdminDashboard() {
                 <th>參與組織</th>
                 <th>應繳</th>
                 <th>已繳</th>
+                <th>匯款日期</th>
                 <th>後五碼</th>
                 {authLevel === 'super' && <th>操作 (對帳/修改/刪除)</th>}
               </tr>
@@ -397,6 +415,7 @@ export default function AdminDashboard() {
                       <span style={{ color: 'var(--error)' }}>{form.totalFee === 0 ? '-' : '尚未繳費'}</span>
                     )}
                   </td>
+                  <td>{form.transferDate || '-'}</td>
                   <td>{form.accountLastFive || '-'}</td>
                   {authLevel === 'super' && (
                     <td style={{ textAlign: 'center' }}>
