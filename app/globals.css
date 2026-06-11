@@ -226,9 +226,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .data-table th,
 .data-table td {
-  padding: 1rem;
+  padding: 1rem 0.5rem;
   text-align: left;
   border-bottom: 1px solid var(--border);
+  min-width: 5.5em; /* Ensure 5 characters fit without wrapping */
+  line-height: 1.4;
 }
 
 .data-table th {
