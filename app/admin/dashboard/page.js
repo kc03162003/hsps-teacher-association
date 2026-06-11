@@ -94,9 +94,22 @@ export default function AdminDashboard() {
       const { updateDoc, doc, serverTimestamp } = await import('firebase/firestore');
       const { db } = await import('@/lib/firebase');
       
+      const form = forms.find(f => f.id === formId);
       const updateData = { isReconciled: !currentStatus };
+      
       if (!currentStatus) {
         updateData.reconciledAt = serverTimestamp();
+        if (!form.accountLastFive) {
+          updateData.accountLastFive = '出納收現';
+        }
+        if (form.paidAmount === null || form.paidAmount === undefined || form.paidAmount === '') {
+          updateData.paidAmount = form.totalFee || 0;
+        }
+        if (!form.transferDate) {
+          const today = new Date();
+          const localDateString = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+          updateData.transferDate = localDateString;
+        }
       } else {
         updateData.reconciledAt = null;
       }
@@ -106,6 +119,7 @@ export default function AdminDashboard() {
         if (f.id === formId) {
           return { 
             ...f, 
+            ...updateData,
             isReconciled: !currentStatus, 
             reconciledAt: !currentStatus ? new Date().toISOString() : null 
           };
