@@ -197,6 +197,9 @@ export default function AdminDashboard() {
   const totalExpectedFee = filteredForms.reduce((sum, f) => sum + (f.totalFee || 0), 0);
   const totalPaidFee = filteredForms.reduce((sum, f) => sum + (f.paidAmount || 0), 0);
 
+  const totalUnpaidFee = totalExpectedFee - totalPaidFee;
+  const paidRatio = totalExpectedFee === 0 ? 0 : Math.min(100, Math.round((totalPaidFee / totalExpectedFee) * 100));
+
   return (
     <div className="container" style={{ maxWidth: '1000px' }}>
       <div className="flex justify-between items-center mb-2">
@@ -218,23 +221,53 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Stats Dashboard */}
-      <div className="grid grid-cols-4 gap-1 mb-2" style={{ textAlign: 'center' }}>
-        <div className="alert" style={{ background: '#f8fafc', padding: '1rem 0.5rem' }}>
-          <div className="text-sm" style={{ opacity: 0.7 }}>總登記人數</div>
-          <div className="text-2xl font-bold">{totalCount} 人</div>
+      {/* Stats Dashboard with Pie Chart */}
+      <div className="grid grid-cols-2 gap-2 mb-2" style={{ gridTemplateColumns: '1fr 1.5fr' }}>
+        {/* People Stats */}
+        <div className="flex gap-1">
+          <div className="alert flex-1 flex flex-col justify-center items-center" style={{ background: '#f8fafc', padding: '1rem 0.5rem', margin: 0 }}>
+            <div className="text-sm" style={{ opacity: 0.7 }}>總登記人數</div>
+            <div className="text-3xl font-bold">{totalCount} <span className="text-sm font-normal">人</span></div>
+          </div>
+          <div className="alert flex-1 flex flex-col justify-center items-center" style={{ background: '#f0fdf4', borderColor: '#bbf7d0', margin: 0 }}>
+            <div className="text-sm" style={{ opacity: 0.7 }}>已繳費人數</div>
+            <div className="text-3xl font-bold" style={{ color: '#166534' }}>{paidCount} <span className="text-sm font-normal">人</span></div>
+          </div>
         </div>
-        <div className="alert" style={{ background: '#f0fdf4', borderColor: '#bbf7d0', padding: '1rem 0.5rem' }}>
-          <div className="text-sm" style={{ opacity: 0.7 }}>已繳費人數</div>
-          <div className="text-2xl font-bold" style={{ color: '#166534' }}>{paidCount} 人</div>
-        </div>
-        <div className="alert" style={{ background: '#fffbeb', borderColor: '#fde68a', padding: '1rem 0.5rem' }}>
-          <div className="text-sm" style={{ opacity: 0.7 }}>總應收金額</div>
-          <div className="text-2xl font-bold" style={{ color: '#b45309' }}>$ {totalExpectedFee}</div>
-        </div>
-        <div className="alert" style={{ background: '#eff6ff', borderColor: '#bfdbfe', padding: '1rem 0.5rem' }}>
-          <div className="text-sm" style={{ opacity: 0.7 }}>總已收金額</div>
-          <div className="text-2xl font-bold" style={{ color: '#1d4ed8' }}>$ {totalPaidFee}</div>
+
+        {/* Financial Pie Chart Stats */}
+        <div className="alert flex items-center justify-between" style={{ background: '#fffbeb', borderColor: '#fde68a', margin: 0, padding: '1rem 1.5rem' }}>
+          <div className="flex items-center gap-2">
+            {/* Pie Chart */}
+            <div style={{ position: 'relative', width: '90px', height: '90px' }}>
+              <div style={{
+                width: '100%', height: '100%', borderRadius: '50%',
+                background: `conic-gradient(#3b82f6 ${paidRatio}%, #fca5a5 ${paidRatio}% 100%)`,
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}></div>
+              <div style={{
+                position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                background: '#fffbeb', borderRadius: '50%', width: '60px', height: '60px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 'bold', fontSize: '1rem', color: '#b45309'
+              }}>{paidRatio}%</div>
+            </div>
+            {/* Total Expected Label */}
+            <div className="flex flex-col justify-center" style={{ lineHeight: '1.4' }}>
+              <div className="text-sm" style={{ opacity: 0.8 }}>應收總金額</div>
+              <div className="text-2xl font-bold" style={{ color: '#b45309' }}>$ {totalExpectedFee}</div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-1 text-right">
+            <div>
+              <div className="text-xs" style={{ opacity: 0.7 }}>已收金額 <span style={{display:'inline-block', width:'10px', height:'10px', background:'#3b82f6', borderRadius:'2px', marginLeft:'4px'}}></span></div>
+              <div className="text-lg font-bold" style={{ color: '#1d4ed8' }}>$ {totalPaidFee}</div>
+            </div>
+            <div>
+              <div className="text-xs" style={{ opacity: 0.7 }}>未收金額 <span style={{display:'inline-block', width:'10px', height:'10px', background:'#fca5a5', borderRadius:'2px', marginLeft:'4px'}}></span></div>
+              <div className="text-lg font-bold" style={{ color: '#ef4444' }}>$ {totalUnpaidFee}</div>
+            </div>
+          </div>
         </div>
       </div>
 
