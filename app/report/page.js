@@ -47,7 +47,8 @@ export default function ReportPage() {
           unit: userData.unit,
           name: userData.name,
           associations: associations.join('、 '),
-          totalFee: userData.totalFee
+          totalFee: userData.totalFee,
+          isReconciled: userData.isReconciled || false
         });
       }
     } catch (error) {
@@ -148,6 +149,12 @@ export default function ReportPage() {
             <p style={{ margin: '0.2rem 0' }}><strong>單位：</strong>{searchResult.unit} &nbsp;&nbsp; <strong>姓名：</strong>{searchResult.name}</p>
             <p style={{ margin: '0.2rem 0' }}><strong>參加教師會：</strong>{searchResult.associations}</p>
             <p style={{ margin: '0.2rem 0' }}><strong>應繳交金額：</strong>{searchResult.totalFee} 元</p>
+            <p style={{ margin: '0.2rem 0' }}><strong>目前對帳狀態：</strong> 
+              {searchResult.isReconciled ? 
+                <span style={{ color: '#059669', fontWeight: 'bold' }}>✅ 已完成對帳</span> : 
+                <span style={{ color: '#ea580c', fontWeight: 'bold' }}>⏳ 尚未對帳 (或處理中)</span>
+              }
+            </p>
             <hr style={{ margin: '0.5rem 0', borderColor: '#bae6fd', opacity: 0.5 }} />
             <p style={{ margin: 0, fontSize: '0.9rem', color: '#dc2626' }}>※ 如內容有誤請洽教師會</p>
           </div>
