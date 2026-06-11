@@ -45,6 +45,21 @@ export default function AdminDashboard() {
     }
   }, [router]);
 
+  const handleToggleReconcile = async (formId, currentStatus) => {
+    if (authLevel !== 'super') return;
+    try {
+      const { updateDoc, doc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+      await updateDoc(doc(db, 'teacher_association_forms', formId), {
+        isReconciled: !currentStatus
+      });
+      setForms(prev => prev.map(f => f.id === formId ? { ...f, isReconciled: !currentStatus } : f));
+    } catch (error) {
+      console.error('Error updating reconciliation status:', error);
+      alert('更新對帳狀態失敗，請重試。');
+    }
+  };
+
   const handleExport = () => {
     const headers = ['ID', '學年度', '單位', '姓名', '海山校教師會', '全教產', '全教總', '不加入', '應繳金額', '已繳金額', '帳號後五碼', '登記時間'];
     const csvContent = [
@@ -141,6 +156,7 @@ export default function AdminDashboard() {
                 <th>應繳</th>
                 <th>已繳</th>
                 <th>後五碼</th>
+                {authLevel === 'super' && <th>對帳完成</th>}
               </tr>
             </thead>
             <tbody>
@@ -166,6 +182,17 @@ export default function AdminDashboard() {
                     )}
                   </td>
                   <td>{form.accountLastFive || '-'}</td>
+                  {authLevel === 'super' && (
+                    <td style={{ textAlign: 'center' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={form.isReconciled || false} 
+                        onChange={() => handleToggleReconcile(form.id, form.isReconciled)}
+                        style={{ width: '1.2rem', height: '1.2rem', cursor: 'pointer', accentColor: 'var(--success)' }}
+                        title="標記為已對帳"
+                      />
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
