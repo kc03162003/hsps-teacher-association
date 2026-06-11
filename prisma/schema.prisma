@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Year {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // e.g., "113學年度"
+  isActive  Boolean  @default(false)
+  forms     Form[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Form {
+  id              Int      @id @default(autoincrement())
+  yearId          Int
+  year            Year     @relation(fields: [yearId], references: [id])
+  unit            String   // 單位
+  name            String   // 姓名
+  joinHaishan     Boolean  @default(false) // 海山校教師會
+  joinNFEU        Boolean  @default(false) // 全教產
+  joinNTA         Boolean  @default(false) // 全教總
+  totalFee        Int      // 應繳金額
+  paidAmount      Int?     // 已繳金額
+  accountLastFive String?  // 帳號後五碼
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
