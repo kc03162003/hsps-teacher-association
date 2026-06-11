@@ -9,9 +9,9 @@ export default function AdminLogin() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (password === 'HSPS1234' || password === 'HSPS12345') {
+    if (password === 'HSPS115' || password === 'c1723') {
       // Dummy check, in a real app use API route with session/cookies
-      localStorage.setItem('adminAuth', password === 'HSPS12345' ? 'super' : 'view');
+      localStorage.setItem('adminAuth', password === 'c1723' ? 'super' : 'view');
       router.push('/admin/dashboard');
     } else {
       alert('密碼錯誤！');
