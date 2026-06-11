@@ -410,27 +410,27 @@ export default function AdminDashboard() {
             <tbody>
               {filteredForms.map(form => (
                 <tr key={form.id}>
-                  <td style={{ whiteSpace: 'nowrap', fontSize: getFormYear(form).length === 5 ? '0.9em' : '1em' }}>{getFormYear(form)}</td>
-                  <td style={form.unit?.length > 5 ? { whiteSpace: 'normal', wordBreak: 'break-all', maxWidth: '8em' } : { whiteSpace: 'nowrap', fontSize: form.unit?.length === 5 ? '0.9em' : '1em' }}>{form.unit}</td>
-                  <td style={form.name?.length > 5 ? { whiteSpace: 'normal', wordBreak: 'break-all', maxWidth: '8em' } : { whiteSpace: 'nowrap', fontSize: form.name?.length === 5 ? '0.9em' : '1em' }}>{form.name}</td>
+                  <td>{getFormYear(form)}</td>
+                  <td>{form.unit}</td>
+                  <td>{form.name}</td>
                   <td>
-                    <div className="flex gap-1 text-sm" style={{ whiteSpace: 'nowrap' }}>
+                    <div className="flex gap-1 text-sm">
                       {form.joinHaishan && <span className="alert-info" style={{padding: '2px 6px', borderRadius: '4px'}}>海山</span>}
                       {form.joinNFEU && <span className="alert-success" style={{padding: '2px 6px', borderRadius: '4px'}}>全教產</span>}
                       {form.joinNTA && <span className="alert-error" style={{padding: '2px 6px', borderRadius: '4px'}}>全教總</span>}
                       {(!form.joinHaishan && !form.joinNFEU && !form.joinNTA) && <span style={{padding: '2px 6px', borderRadius: '4px', background: 'rgba(0,0,0,0.05)'}}>無</span>}
                     </div>
                   </td>
-                  <td style={{ whiteSpace: 'nowrap' }}>{form.totalFee}</td>
-                  <td style={{ whiteSpace: 'nowrap' }}>
+                  <td>{form.totalFee}</td>
+                  <td>
                     {form.paidAmount ? (
                       <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>{form.paidAmount}</span>
                     ) : (
-                      <span style={{ color: 'var(--error)', fontSize: '0.9em' }}>{form.totalFee === 0 ? '-' : '尚未繳費'}</span>
+                      <span style={{ color: 'var(--error)' }}>{form.totalFee === 0 ? '-' : '尚未繳費'}</span>
                     )}
                   </td>
-                  <td style={{ whiteSpace: 'nowrap' }}>{form.transferDate || '-'}</td>
-                  <td style={form.accountLastFive?.length > 5 ? { whiteSpace: 'normal', wordBreak: 'break-all', maxWidth: '8em' } : { whiteSpace: 'nowrap', fontSize: form.accountLastFive?.length === 5 ? '0.9em' : '1em' }}>{form.accountLastFive || '-'}</td>
+                  <td>{form.transferDate || '-'}</td>
+                  <td>{form.accountLastFive || '-'}</td>
                   {authLevel === 'super' && (
                     <td style={{ textAlign: 'center' }}>
                       <div className="flex gap-1 items-center justify-center">
