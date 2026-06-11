@@ -88,7 +88,7 @@ export default function Home() {
       const querySnapshotOld = await getDocs(qOld);
 
       if (!querySnapshot.empty || !querySnapshotOld.empty) {
-        alert(`您在「${activeYear}」已經有登記紀錄！\n若有填寫錯誤需要修改，請洽系統管理員。`);
+        alert('已填寫過資料，請勿重複填寫。');
         setIsSubmitting(false);
         return;
       }
