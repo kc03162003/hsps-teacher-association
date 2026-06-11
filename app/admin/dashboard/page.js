@@ -222,7 +222,10 @@ export default function AdminDashboard() {
             '<span style="font-weight: bold;">' + f.name + '</span>' +
             '<span class="unit-label">' + f.unit + '</span>' +
           '</div>' +
-          '<div class="checkbox"></div>' +
+          '<div class="checkbox-group">' +
+            '理<div class="checkbox"></div>' +
+            '監<div class="checkbox"></div>' +
+          '</div>' +
         '</div>'
       ).join('');
 
@@ -234,19 +237,24 @@ export default function AdminDashboard() {
 
     const htmlContent = '<!DOCTYPE html><html><head><title>' + activeYear + ' 理監事選票</title>' +
       '<style>' +
-        'body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 20px; color: #000; } ' +
-        'h1 { text-align: center; margin-bottom: 20px; font-size: 24px; } ' +
-        '.grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; } ' +
-        '.category-box { border: 2px solid #000; padding: 10px; border-radius: 8px; page-break-inside: avoid; } ' +
-        '.category-title { font-weight: bold; font-size: 1.2em; border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 5px; text-align: center; } ' +
-        '.member-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed #ccc; padding-bottom: 4px; font-size: 14px; } ' +
-        '.checkbox { width: 16px; height: 16px; border: 1.5px solid #000; display: inline-block; margin-left: 10px; } ' +
-        '.member-info { display: flex; flex-direction: column; } ' +
-        '.unit-label { font-size: 10px; color: #555; } ' +
-        '@media print { body { margin: 0; padding: 10px; } .grid-container { grid-template-columns: repeat(4, 1fr); gap: 10px; } @page { margin: 1cm; } } ' +
+        'body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 10px; color: #000; font-size: 11px; } ' +
+        'h1 { text-align: center; margin-bottom: 5px; font-size: 20px; line-height: 1.2; letter-spacing: 2px; } ' +
+        '.subtitle { text-align: center; margin-bottom: 12px; font-size: 14px; font-weight: bold; } ' +
+        '.grid-container { column-count: 7; column-gap: 8px; width: 100%; } ' +
+        '.category-box { border: 1.5px solid #000; padding: 4px; border-radius: 4px; break-inside: avoid; page-break-inside: avoid; margin-bottom: 8px; } ' +
+        '.category-title { font-weight: bold; font-size: 12px; border-bottom: 1.5px solid #000; margin-bottom: 4px; padding-bottom: 2px; text-align: center; } ' +
+        '.member-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; border-bottom: 1px dashed #999; padding-bottom: 2px; } ' +
+        '.member-info { display: flex; align-items: center; gap: 4px; flex: 1; overflow: hidden; white-space: nowrap; } ' +
+        '.checkbox-group { display: flex; align-items: center; gap: 2px; font-size: 10px; font-weight: bold; } ' +
+        '.checkbox { width: 12px; height: 12px; border: 1px solid #000; display: inline-block; margin-right: 2px; } ' +
+        '.unit-label { font-size: 9px; color: #555; } ' +
+        '@media print { ' +
+          '@page { size: A4 landscape; margin: 8mm; } ' +
+          'body { margin: 0; padding: 0; } ' +
+        '} ' +
       '</style></head><body>' +
       '<h1>' + activeYear + ' 海山國小校教師會理監事選票</h1>' +
-      '<p style="text-align: center; margin-bottom: 20px;">請在欲票選的候選人右側方格內畫記或蓋章</p>' +
+      '<div class="subtitle">請在欲票選的候選人右側方格內畫記或蓋章 (應選理事 11 人、監事 3 人)</div>' +
       '<div class="grid-container">' +
       groupsHtml +
       '</div></body></html>';
