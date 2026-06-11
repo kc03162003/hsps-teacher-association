@@ -121,7 +121,7 @@ export default function ReportPage() {
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label">姓名</label>
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '10px' }}>
             <input 
               type="text" 
               name="name" 
