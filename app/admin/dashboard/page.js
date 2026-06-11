@@ -178,6 +178,100 @@ export default function AdminDashboard() {
     }
   };
 
+  const handlePrintBallots = () => {
+    const ballotMembers = forms.filter(f => getFormYear(f) === activeYear && f.joinHaishan);
+    
+    const groups = {
+      '行政': [],
+      '一年級': [],
+      '二年級': [],
+      '三年級': [],
+      '四年級': [],
+      '五年級': [],
+      '六年級': [],
+      '科任': []
+    };
+
+    ballotMembers.forEach(f => {
+      const s = f.unit ? f.unit.toString() : '';
+      if (/教務|學務|輔導|總務|人事|會計|校長|行政/.test(s)) {
+        groups['行政'].push(f);
+      } else if (/([1-6])\d{2}/.test(s)) {
+        const matchNum = s.match(/([1-6])\d{2}/);
+        const grades = ['一', '二', '三', '四', '五', '六'];
+        groups[grades[parseInt(matchNum[1]) - 1] + '年級'].push(f);
+      } else if (/六年|6年|^6/.test(s) || s.includes('六')) { groups['六年級'].push(f); }
+      else if (/五年|5年|^5/.test(s) || s.includes('五')) { groups['五年級'].push(f); }
+      else if (/四年|4年|^4/.test(s) || s.includes('四')) { groups['四年級'].push(f); }
+      else if (/三年|3年|^3/.test(s) || s.includes('三')) { groups['三年級'].push(f); }
+      else if (/二年|2年|^2/.test(s) || s.includes('二')) { groups['二年級'].push(f); }
+      else if (/一年|1年|^1/.test(s) || s.includes('一')) { groups['一年級'].push(f); }
+      else {
+        groups['科任'].push(f);
+      }
+    });
+
+    let htmlContent = `
+    <html>
+    <head>
+      <title>${activeYear} 理監事選票</title>
+      <style>
+        body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 20px; color: #000; }
+        h1 { text-align: center; margin-bottom: 20px; font-size: 24px; }
+        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .category-box { border: 2px solid #000; padding: 10px; border-radius: 8px; page-break-inside: avoid; }
+        .category-title { font-weight: bold; font-size: 1.2em; border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 5px; text-align: center; }
+        .member-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed #ccc; padding-bottom: 4px; font-size: 14px; }
+        .checkbox { width: 16px; height: 16px; border: 1.5px solid #000; display: inline-block; margin-left: 10px; }
+        .member-info { display: flex; flex-direction: column; }
+        .unit-label { font-size: 10px; color: #555; }
+        @media print {
+          body { margin: 0; padding: 10px; }
+          .grid-container { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+          @page { margin: 1cm; }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>${activeYear} 海山國小校教師會理監事選票</h1>
+      <p style="text-align: center; margin-bottom: 20px;">請在欲票選的候選人右側方格內畫記或蓋章</p>
+      <div class="grid-container">
+    `;
+
+    const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任'];
+    order.forEach(cat => {
+      if (groups[cat].length > 0) {
+        groups[cat].sort((a, b) => a.unit.localeCompare(b.unit) || a.name.localeCompare(b.name));
+        htmlContent += \`
+        <div class="category-box">
+          <div class="category-title">\${cat} (\${groups[cat].length}人)</div>
+          \${groups[cat].map(f => \`
+            <div class="member-item">
+              <div class="member-info">
+                <span style="font-weight: bold;">\${f.name}</span>
+                <span class="unit-label">\${f.unit}</span>
+              </div>
+              <div class="checkbox"></div>
+            </div>
+          \`).join('')}
+        </div>
+        \`;
+      }
+    });
+
+    htmlContent += \`
+      </div>
+    </body>
+    </html>
+    \`;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 500);
+  };
+
   const handleExport = () => {
     const headers = ['ID', '學年度', '單位', '姓名', '海山校教師會', '全教產', '全教總', '不加入', '應繳金額', '已繳金額', '匯款日期', '帳號後五碼', '登記時間'];
     const csvContent = [
@@ -191,9 +285,9 @@ export default function AdminDashboard() {
         f.totalFee, f.paidAmount || 0, f.transferDate || '', f.accountLastFive || '',
         new Date(f.createdAt).toLocaleString()
       ].join(','))
-    ].join('\n');
+    ].join('\\n');
 
-    const blob = new Blob(["\uFEFF"+csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(["\\uFEFF"+csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
@@ -274,7 +368,7 @@ export default function AdminDashboard() {
             <div style={{ position: 'relative', width: '90px', height: '90px' }}>
               <div style={{
                 width: '100%', height: '100%', borderRadius: '50%',
-                background: `conic-gradient(#3b82f6 ${paidRatio}%, #fca5a5 ${paidRatio}% 100%)`,
+                background: \`conic-gradient(#3b82f6 \${paidRatio}%, #fca5a5 \${paidRatio}% 100%)\`,
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}></div>
               <div style={{
@@ -282,7 +376,7 @@ export default function AdminDashboard() {
                 background: '#fffbeb', borderRadius: '50%', width: '60px', height: '60px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontWeight: 'bold', fontSize: '1rem', color: '#b45309'
-              }}>{paidRatio}%</div>
+              }}>\${paidRatio}%</div>
             </div>
             {/* Total Expected Label */}
             <div className="flex flex-col justify-center" style={{ lineHeight: '1.4' }}>
@@ -333,7 +427,10 @@ export default function AdminDashboard() {
           </select>
         </div>
         {authLevel === 'super' && (
-          <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleExport}>匯出 CSV</button>
+          <div className="flex gap-1">
+            <button className="btn btn-secondary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handlePrintBallots}>列印選票</button>
+            <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleExport}>匯出 CSV</button>
+          </div>
         )}
       </div>
 
