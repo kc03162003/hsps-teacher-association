@@ -127,8 +127,9 @@ export default function Home() {
             <div className="alert alert-info">
               <h3>繳費資訊</h3>
               <p className="mt-1">請匯款至以下帳號：</p>
-              <p className="font-bold text-2xl">(123) 4567-8901-2345</p>
-              <p className="mt-1">戶名：海山校教師會</p>
+              <p className="font-bold text-xl" style={{ margin: '0.5rem 0' }}>銀行代碼：中國信託 (822)</p>
+              <p className="font-bold text-2xl" style={{ margin: '0.5rem 0' }}>帳號：820540069862</p>
+              <p className="mt-1">代收款人：邱薏婷</p>
             </div>
             <p className="mt-2 text-sm" style={{ opacity: 0.8 }}>
               提醒您：繳費完成後，請務必至「回報繳費」頁面填寫您的匯款帳號後五碼，以便對帳。
