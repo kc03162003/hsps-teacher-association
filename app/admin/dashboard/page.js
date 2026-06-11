@@ -354,7 +354,7 @@ export default function AdminDashboard() {
             <div style={{ position: 'relative', width: '90px', height: '90px' }}>
               <div style={{
                 width: '100%', height: '100%', borderRadius: '50%',
-                background: \`conic-gradient(#3b82f6 \${paidRatio}%, #fca5a5 \${paidRatio}% 100%)\`,
+                background: `conic-gradient(#3b82f6 ${paidRatio}%, #fca5a5 ${paidRatio}% 100%)`,
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}></div>
               <div style={{
@@ -362,7 +362,7 @@ export default function AdminDashboard() {
                 background: '#fffbeb', borderRadius: '50%', width: '60px', height: '60px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontWeight: 'bold', fontSize: '1rem', color: '#b45309'
-              }}>\${paidRatio}%</div>
+              }}>{paidRatio}%</div>
             </div>
             {/* Total Expected Label */}
             <div className="flex flex-col justify-center" style={{ lineHeight: '1.4' }}>
