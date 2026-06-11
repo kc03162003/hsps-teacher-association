@@ -11,6 +11,7 @@ export default function AdminDashboard() {
   const [filter, setFilter] = useState('ALL'); // ALL, UNPAID, HAISHAN, NFEU, NTA
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [editingForm, setEditingForm] = useState(null);
 
   useEffect(() => {
     const level = localStorage.getItem('adminAuth');
@@ -57,6 +58,51 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error updating reconciliation status:', error);
       alert('更新對帳狀態失敗，請重試。');
+    }
+  };
+
+  const handleDelete = async (formId) => {
+    if (authLevel !== 'super') return;
+    if (!window.confirm('確定要刪除這筆資料嗎？刪除後將無法復原！')) return;
+    try {
+      const { deleteDoc, doc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+      await deleteDoc(doc(db, 'teacher_association_forms', formId));
+      setForms(prev => prev.filter(f => f.id !== formId));
+    } catch (error) {
+      console.error(error);
+      alert('刪除失敗');
+    }
+  };
+
+  const handleEditClick = (form) => {
+    if (authLevel !== 'super') return;
+    setEditingForm({ ...form });
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const { updateDoc, doc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+      
+      const payload = {
+        unit: editingForm.unit,
+        name: editingForm.name,
+        joinHaishan: editingForm.joinHaishan,
+        joinNFEU: editingForm.joinNFEU,
+        joinNTA: editingForm.joinNTA,
+        joinNone: editingForm.joinNone,
+        totalFee: parseInt(editingForm.totalFee) || 0,
+        paidAmount: editingForm.paidAmount === '' || editingForm.paidAmount === null ? null : parseInt(editingForm.paidAmount),
+        accountLastFive: editingForm.accountLastFive || ''
+      };
+
+      await updateDoc(doc(db, 'teacher_association_forms', editingForm.id), payload);
+      setForms(prev => prev.map(f => f.id === editingForm.id ? { ...f, ...payload } : f));
+      setEditingForm(null);
+    } catch (error) {
+      console.error(error);
+      alert('儲存失敗');
     }
   };
 
@@ -142,6 +188,54 @@ export default function AdminDashboard() {
         <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleExport}>匯出 CSV</button>
       </div>
 
+      {/* Edit Modal */}
+      {editingForm && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'
+        }}>
+          <div className="container" style={{ margin: 0, width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <h3>修改資料</h3>
+            <div className="form-group mt-1">
+              <label className="form-label">單位</label>
+              <input className="form-input" value={editingForm.unit} onChange={e => setEditingForm({...editingForm, unit: e.target.value})} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">姓名</label>
+              <input className="form-input" value={editingForm.name} onChange={e => setEditingForm({...editingForm, name: e.target.value})} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">參與組織</label>
+              <div className="flex gap-1" style={{ flexWrap: 'wrap' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><input type="checkbox" checked={editingForm.joinHaishan} onChange={e => setEditingForm({...editingForm, joinHaishan: e.target.checked})} style={{ width: '1rem', height: '1rem' }} /> 海山</label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><input type="checkbox" checked={editingForm.joinNFEU} onChange={e => setEditingForm({...editingForm, joinNFEU: e.target.checked})} style={{ width: '1rem', height: '1rem' }} /> 全教產</label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><input type="checkbox" checked={editingForm.joinNTA} onChange={e => setEditingForm({...editingForm, joinNTA: e.target.checked})} style={{ width: '1rem', height: '1rem' }} /> 全教總</label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><input type="checkbox" checked={editingForm.joinNone} onChange={e => setEditingForm({...editingForm, joinNone: e.target.checked})} style={{ width: '1rem', height: '1rem' }} /> 不加入</label>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-1">
+              <div className="form-group">
+                <label className="form-label">應繳金額</label>
+                <input type="number" className="form-input" value={editingForm.totalFee} onChange={e => setEditingForm({...editingForm, totalFee: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">已繳金額</label>
+                <input type="number" className="form-input" value={editingForm.paidAmount === null ? '' : editingForm.paidAmount} onChange={e => setEditingForm({...editingForm, paidAmount: e.target.value})} placeholder="尚未繳費" />
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">帳號後五碼</label>
+              <input className="form-input" value={editingForm.accountLastFive || ''} onChange={e => setEditingForm({...editingForm, accountLastFive: e.target.value})} />
+            </div>
+            <div className="flex gap-1 mt-2">
+              <button className="btn btn-primary" onClick={handleSaveEdit}>儲存修改</button>
+              <button className="btn btn-secondary" onClick={() => setEditingForm(null)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ overflowX: 'auto' }}>
         {isLoading ? (
           <p className="text-center mt-2">載入中...</p>
@@ -156,7 +250,7 @@ export default function AdminDashboard() {
                 <th>應繳</th>
                 <th>已繳</th>
                 <th>後五碼</th>
-                {authLevel === 'super' && <th>對帳完成</th>}
+                {authLevel === 'super' && <th>操作 (對帳/修改/刪除)</th>}
               </tr>
             </thead>
             <tbody>
@@ -184,13 +278,20 @@ export default function AdminDashboard() {
                   <td>{form.accountLastFive || '-'}</td>
                   {authLevel === 'super' && (
                     <td style={{ textAlign: 'center' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={form.isReconciled || false} 
-                        onChange={() => handleToggleReconcile(form.id, form.isReconciled)}
-                        style={{ width: '1.2rem', height: '1.2rem', cursor: 'pointer', accentColor: 'var(--success)' }}
-                        title="標記為已對帳"
-                      />
+                      <div className="flex gap-1 items-center justify-center">
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', marginRight: '4px' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={form.isReconciled || false} 
+                            onChange={() => handleToggleReconcile(form.id, form.isReconciled)}
+                            style={{ width: '1.2rem', height: '1.2rem', accentColor: 'var(--success)' }}
+                            title="標記為已對帳"
+                          />
+                          <span style={{ fontSize: '0.85rem' }}>對帳</span>
+                        </label>
+                        <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.85rem', width: 'auto' }} onClick={() => handleEditClick(form)}>修改</button>
+                        <button className="btn" style={{ padding: '0.2rem 0.5rem', fontSize: '0.85rem', width: 'auto', backgroundColor: 'var(--error)', color: 'white', borderColor: 'var(--error)' }} onClick={() => handleDelete(form.id)}>刪除</button>
+                      </div>
                     </td>
                   )}
                 </tr>
