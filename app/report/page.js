@@ -45,6 +45,7 @@ export default function ReportPage() {
 
         setSearchResult({
           unit: userData.unit,
+          name: userData.name,
           associations: associations.join('、 '),
           totalFee: userData.totalFee
         });
@@ -144,7 +145,7 @@ export default function ReportPage() {
         {searchResult && (
           <div className="alert mt-1 mb-1" style={{ backgroundColor: '#f0f9ff', color: '#0369a1', borderColor: '#bae6fd' }}>
             <h3 style={{ marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem' }}>您的登記資訊</h3>
-            <p style={{ margin: '0.2rem 0' }}><strong>單位：</strong>{searchResult.unit}</p>
+            <p style={{ margin: '0.2rem 0' }}><strong>單位：</strong>{searchResult.unit} &nbsp;&nbsp; <strong>姓名：</strong>{searchResult.name}</p>
             <p style={{ margin: '0.2rem 0' }}><strong>參加教師會：</strong>{searchResult.associations}</p>
             <p style={{ margin: '0.2rem 0' }}><strong>應繳交金額：</strong>{searchResult.totalFee} 元</p>
             <hr style={{ margin: '0.5rem 0', borderColor: '#bae6fd', opacity: 0.5 }} />
