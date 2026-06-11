@@ -242,28 +242,28 @@ export default function AdminDashboard() {
     order.forEach(cat => {
       if (groups[cat].length > 0) {
         groups[cat].sort((a, b) => a.unit.localeCompare(b.unit) || a.name.localeCompare(b.name));
-        htmlContent += \`
+        htmlContent += `
         <div class="category-box">
-          <div class="category-title">\${cat} (\${groups[cat].length}人)</div>
-          \${groups[cat].map(f => \`
+          <div class="category-title">${cat} (${groups[cat].length}人)</div>
+          ${groups[cat].map(f => `
             <div class="member-item">
               <div class="member-info">
-                <span style="font-weight: bold;">\${f.name}</span>
-                <span class="unit-label">\${f.unit}</span>
+                <span style="font-weight: bold;">${f.name}</span>
+                <span class="unit-label">${f.unit}</span>
               </div>
               <div class="checkbox"></div>
             </div>
-          \`).join('')}
+          `).join('')}
         </div>
-        \`;
+        `;
       }
     });
 
-    htmlContent += \`
+    htmlContent += `
       </div>
     </body>
     </html>
-    \`;
+    `;
 
     const printWindow = window.open('', '_blank');
     printWindow.document.write(htmlContent);
