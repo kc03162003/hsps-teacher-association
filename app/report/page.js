@@ -252,8 +252,8 @@ export default function ReportPage() {
               type="text" 
               name="accountLastFive" 
               className="form-input" 
-              placeholder="例如：12345"
-              maxLength={5}
+              placeholder="例如：12345 (若繳現金請填寫「現金」)"
+              maxLength={10}
               value={formData.accountLastFive}
               onChange={handleChange}
               required
