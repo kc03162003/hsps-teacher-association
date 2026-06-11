@@ -40,6 +40,15 @@ export default function ReportPage() {
 
       // Update the first matching document (assuming name is unique enough for this simple app)
       const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
+
+      // Check if the paid amount matches the registered total fee
+      if (parseInt(formData.paidAmount) !== userData.totalFee) {
+        alert('您的繳費金額與您之前登記的金額不同，請確認您的資料無誤。');
+        setIsSubmitting(false);
+        return;
+      }
+
       await updateDoc(doc(db, 'teacher_association_forms', userDoc.id), {
         paidAmount: parseInt(formData.paidAmount),
         accountLastFive: formData.accountLastFive
