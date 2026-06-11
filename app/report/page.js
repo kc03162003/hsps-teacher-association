@@ -33,7 +33,7 @@ export default function ReportPage() {
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        alert('找不到該姓名的登記資料，請確認姓名是否正確。');
+        alert('請確認您輸入的名稱無誤，若名稱無誤，表示您尚未登記您要加入的教師會，請至表單登記網頁登記，謝謝');
         setIsSubmitting(false);
         return;
       }
