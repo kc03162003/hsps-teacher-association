@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
@@ -15,6 +15,19 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [calculatedFee, setCalculatedFee] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeYear, setActiveYear] = useState('115學年度');
+
+  useEffect(() => {
+    import('@/lib/firebase').then(({ db }) => {
+      import('firebase/firestore').then(({ doc, getDoc }) => {
+        getDoc(doc(db, 'settings', 'general')).then(settingsDoc => {
+          if (settingsDoc.exists() && settingsDoc.data().activeYear) {
+            setActiveYear(settingsDoc.data().activeYear);
+          }
+        }).catch(console.error);
+      });
+    });
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -58,11 +71,30 @@ export default function Home() {
     
     setIsSubmitting(true);
     try {
-      const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
+      const { collection, addDoc, serverTimestamp, query, where, getDocs } = await import('firebase/firestore');
       const { db } = await import('@/lib/firebase');
 
+      // Duplicate Check
+      const q = query(collection(db, 'teacher_association_forms'), 
+        where('name', '==', formData.name),
+        where('year', '==', activeYear)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      const qOld = query(collection(db, 'teacher_association_forms'), 
+        where('name', '==', formData.name),
+        where('year.name', '==', activeYear)
+      );
+      const querySnapshotOld = await getDocs(qOld);
+
+      if (!querySnapshot.empty || !querySnapshotOld.empty) {
+        alert(`您在「${activeYear}」已經有登記紀錄！\n若有填寫錯誤需要修改，請洽系統管理員。`);
+        setIsSubmitting(false);
+        return;
+      }
+
       await addDoc(collection(db, 'teacher_association_forms'), {
-        year: '115學年度',
+        year: activeYear,
         unit: formData.unit,
         name: formData.name,
         joinHaishan: formData.joinHaishan,
@@ -114,7 +146,7 @@ export default function Home() {
 
   return (
     <div className="container">
-      <h1 className="text-center">115學年度教師會入會登記</h1>
+      <h1 className="text-center">{activeYear}教師會入會登記</h1>
       <p className="text-center mb-2" style={{ opacity: 0.8 }}>請填寫以下資料並選擇您要加入的教師會</p>
       
       <form onSubmit={handleSubmit}>

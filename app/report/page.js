@@ -115,6 +115,58 @@ export default function ReportPage() {
     );
   }
 
+  const handlePrintReceipt = () => {
+    if (!searchResult) return;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>繳費收據 - ${searchResult.name}</title>
+          <style>
+            body { font-family: 'Microsoft JhengHei', sans-serif; padding: 40px; color: #333; }
+            .receipt-box { border: 2px solid #333; padding: 40px; max-width: 600px; margin: 0 auto; position: relative; }
+            .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 100px; color: rgba(0,0,0,0.05); z-index: -1; white-space: nowrap; font-weight: bold; }
+            h1 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 30px; letter-spacing: 2px; }
+            .row { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 1.2rem; }
+            .row.single { justify-content: flex-start; gap: 20px; }
+            .footer { margin-top: 60px; text-align: right; font-size: 1.1rem; border-top: 1px dashed #ccc; padding-top: 20px; }
+            @media print {
+              @page { margin: 1cm; }
+              body { padding: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="receipt-box">
+            <div class="watermark">海山國小教師會</div>
+            <h1>海山國小教師會 繳費收據</h1>
+            <div class="row">
+              <span><strong>單位：</strong> ${searchResult.unit}</span>
+              <span><strong>姓名：</strong> ${searchResult.name}</span>
+            </div>
+            <div class="row single">
+              <span><strong>參與組織項目：</strong> ${searchResult.associations}</span>
+            </div>
+            <div class="row single">
+              <span><strong>實收金額：</strong> 新台幣 <span style="font-size:1.5rem; font-weight:bold;">${searchResult.totalFee}</span> 元整</span>
+            </div>
+            <div class="row single">
+              <span><strong>對帳狀態：</strong> ✅ 已由系統核銷對帳</span>
+            </div>
+            <div class="footer">
+              <p>收款單位：海山國小教師會</p>
+              <p>列印日期：${new Date().toLocaleDateString('zh-TW')}</p>
+            </div>
+          </div>
+          <script>
+            window.onload = function() { window.print(); window.close(); }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   return (
     <div className="container">
       <h1 className="text-center">回報繳費資訊</h1>
@@ -149,12 +201,19 @@ export default function ReportPage() {
             <p style={{ margin: '0.2rem 0' }}><strong>單位：</strong>{searchResult.unit} &nbsp;&nbsp; <strong>姓名：</strong>{searchResult.name}</p>
             <p style={{ margin: '0.2rem 0' }}><strong>參加教師會：</strong>{searchResult.associations}</p>
             <p style={{ margin: '0.2rem 0' }}><strong>應繳交金額：</strong>{searchResult.totalFee} 元</p>
-            <p style={{ margin: '0.2rem 0' }}><strong>目前對帳狀態：</strong> 
-              {searchResult.isReconciled ? 
-                <span style={{ color: '#059669', fontWeight: 'bold' }}>✅ 已完成對帳</span> : 
-                <span style={{ color: '#ea580c', fontWeight: 'bold' }}>⏳ 尚未對帳 (或處理中)</span>
-              }
-            </p>
+            <div style={{ margin: '0.5rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <p style={{ margin: 0 }}><strong>目前對帳狀態：</strong> 
+                {searchResult.isReconciled ? 
+                  <span style={{ color: '#059669', fontWeight: 'bold' }}>✅ 已完成對帳</span> : 
+                  <span style={{ color: '#ea580c', fontWeight: 'bold' }}>⏳ 尚未對帳 (或處理中)</span>
+                }
+              </p>
+              {searchResult.isReconciled && (
+                <button type="button" onClick={handlePrintReceipt} className="btn btn-primary" style={{ width: 'auto', padding: '0.2rem 1rem', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>
+                  🖨️ 下載/列印收據
+                </button>
+              )}
+            </div>
             <hr style={{ margin: '0.5rem 0', borderColor: '#bae6fd', opacity: 0.5 }} />
             <p style={{ margin: 0, fontSize: '0.9rem', color: '#dc2626' }}>※ 如內容有誤請洽教師會</p>
           </div>
