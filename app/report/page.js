@@ -116,7 +116,10 @@ export default function ReportPage() {
   return (
     <div className="container">
       <h1 className="text-center">回報繳費資訊</h1>
-      <p className="text-center mb-2" style={{ opacity: 0.8 }}>請填寫您的姓名與匯款資訊，以利我們對帳。</p>
+      <div className="mb-2" style={{ opacity: 0.8, lineHeight: '1.8', background: 'rgba(0,0,0,0.02)', padding: '1rem', borderRadius: '8px' }}>
+        <p style={{ margin: 0 }}>1. 如不確定您上次填寫的內容，請輸入姓名，按「查詢登記資訊」。</p>
+        <p style={{ margin: 0 }}>2. 如已確定您上次填寫內容，請輸入姓名後，直接填寫金額與帳號後五碼，按「送出回報」。</p>
+      </div>
       
       <form onSubmit={handleSubmit}>
         <div className="form-group">
