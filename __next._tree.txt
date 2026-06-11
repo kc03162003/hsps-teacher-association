@@ -1,2 +1,2 @@
-:HL["/hsps-teacher-association/_next/static/chunks/0_ikt7y7chcn7.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"vCGj7EzcNXUvNHlrLocuv"}
+:HL["/hsps-teacher-association/_next/static/chunks/3uitmv87dj2dl.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"KugUa_0WFXFJkcj8VHt3U"}
