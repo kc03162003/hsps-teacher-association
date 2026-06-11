@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function ReportPage() {
   const [formData, setFormData] = useState({
@@ -59,7 +60,7 @@ export default function ReportPage() {
         <div className="alert alert-success mt-1 mb-2">
           您已成功回報繳費資訊，管理員將會進行對帳。
         </div>
-        <a href="/" className="btn btn-primary mt-2">返回首頁</a>
+        <Link href="/" className="btn btn-primary mt-2" style={{ display: 'inline-block' }}>返回首頁</Link>
       </div>
     );
   }

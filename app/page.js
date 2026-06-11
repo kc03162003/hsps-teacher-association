@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -100,7 +101,7 @@ export default function Home() {
             <p className="mt-2 text-sm" style={{ opacity: 0.8 }}>
               提醒您：繳費完成後，請務必至「回報繳費」頁面填寫您的匯款帳號後五碼，以便對帳。
             </p>
-            <a href="/report" className="btn btn-primary mt-2">前往回報繳費</a>
+            <Link href="/report" className="btn btn-primary mt-2" style={{ display: 'inline-block' }}>前往回報繳費</Link>
           </>
         ) : (
           <div className="alert alert-success mt-1 mb-2">
