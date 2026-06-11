@@ -132,7 +132,7 @@ export default function ReportPage() {
               required
               style={{ flex: 1 }}
             />
-            <button type="button" onClick={handleSearch} className="btn" style={{ padding: '0 1rem', whiteSpace: 'nowrap', backgroundColor: '#e2e8f0', color: '#1e293b' }} disabled={isSearching}>
+            <button type="button" onClick={handleSearch} className="btn" style={{ width: 'auto', flex: '0 0 auto', padding: '0 1rem', whiteSpace: 'nowrap', backgroundColor: '#e2e8f0', color: '#1e293b' }} disabled={isSearching}>
               {isSearching ? '查詢中...' : '查詢登記資訊'}
             </button>
           </div>
