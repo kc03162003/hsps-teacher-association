@@ -8,7 +8,7 @@ export default function ReportPage() {
     name: '',
     paidAmount: '',
     accountLastFive: '',
-    transferDate: new Date().toISOString().split('T')[0],
+    transferDate: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0],
   });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
