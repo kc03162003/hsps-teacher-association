@@ -40,7 +40,6 @@ export default function AdminLogin() {
             className="form-input" 
             value={account}
             onChange={(e) => setAccount(e.target.value)}
-            placeholder="例如: hsps115"
             required
           />
         </div>
