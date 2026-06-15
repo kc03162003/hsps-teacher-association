@@ -24,13 +24,22 @@ export default function AdminDashboard() {
   const getFormYear = (f) => typeof f.year === 'object' ? f.year.name : (f.year || '未指定');
 
   useEffect(() => {
-    const level = localStorage.getItem('adminAuth');
-    if (!level) {
-      router.push('/admin/login');
-    } else {
-      setAuthLevel(level);
-      // Fetch real data from Firebase
-      const fetchData = async () => {
+    import('@/lib/firebase').then(({ auth }) => {
+      import('firebase/auth').then(({ onAuthStateChanged }) => {
+        onAuthStateChanged(auth, (user) => {
+          if (!user) {
+            router.push('/admin/login');
+          } else {
+            // Check email to determine auth level
+            const email = user.email || '';
+            if (email === 'hsps115@hsps.tw') {
+              setAuthLevel('view');
+            } else {
+              setAuthLevel('super');
+            }
+            
+            // Fetch real data from Firebase
+            const fetchData = async () => {
         try {
           const { collection, getDocs, orderBy, query, doc, getDoc } = await import('firebase/firestore');
           const { db } = await import('@/lib/firebase');
@@ -72,9 +81,12 @@ export default function AdminDashboard() {
           console.error(err);
           setIsLoading(false);
         }
-      };
-      fetchData();
-    }
+        };
+        fetchData();
+          }
+        });
+      });
+    });
   }, [router]);
 
   const handleAddYear = async () => {
@@ -361,9 +373,15 @@ export default function AdminDashboard() {
     <div className="container" style={{ maxWidth: '1000px' }}>
       <div className="flex justify-between items-center mb-2">
         <h1>管理員後台 {authLevel === 'super' ? '(高階權限)' : '(一般權限)'}</h1>
-        <button className="btn btn-secondary" style={{ width: 'auto' }} onClick={() => {
-          localStorage.removeItem('adminAuth');
-          router.push('/admin/login');
+        <button className="btn btn-secondary" style={{ width: 'auto' }} onClick={async () => {
+          try {
+            const { signOut } = await import('firebase/auth');
+            const { auth } = await import('@/lib/firebase');
+            await signOut(auth);
+            router.push('/admin/login');
+          } catch (e) {
+            console.error('Logout failed', e);
+          }
         }}>登出</button>
       </div>
 

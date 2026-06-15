@@ -4,18 +4,29 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLogin() {
+  const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (password === 'HSPS115' || password === 'c1723') {
-      // Dummy check, in a real app use API route with session/cookies
-      localStorage.setItem('adminAuth', password === 'c1723' ? 'super' : 'view');
+    setLoading(true);
+    try {
+      const { signInWithEmailAndPassword } = await import('firebase/auth');
+      const { auth } = await import('@/lib/firebase');
+      
+      // Auto-append @hsps.tw if no @ is present
+      const emailToLogin = account.includes('@') ? account : `${account}@hsps.tw`;
+      
+      await signInWithEmailAndPassword(auth, emailToLogin, password);
+      // Login successful, auth state observer in dashboard will handle the rest
       router.push('/admin/dashboard');
-    } else {
-      alert('密碼錯誤！');
+    } catch (error) {
+      console.error(error);
+      alert('登入失敗！帳號或密碼錯誤。');
     }
+    setLoading(false);
   };
 
   return (
@@ -23,6 +34,17 @@ export default function AdminLogin() {
       <h1 className="text-center">管理員登入</h1>
       <form onSubmit={handleLogin}>
         <div className="form-group mt-2">
+          <label className="form-label">請輸入帳號</label>
+          <input 
+            type="text" 
+            className="form-input" 
+            value={account}
+            onChange={(e) => setAccount(e.target.value)}
+            placeholder="例如: hsps115"
+            required
+          />
+        </div>
+        <div className="form-group mt-1">
           <label className="form-label">請輸入密碼</label>
           <input 
             type="password" 
@@ -32,7 +54,9 @@ export default function AdminLogin() {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary mt-1">登入</button>
+        <button type="submit" className="btn btn-primary mt-1" disabled={loading}>
+          {loading ? '登入中...' : '登入'}
+        </button>
       </form>
     </div>
   );

@@ -6,17 +6,16 @@ service cloud.firestore {
     // =====================================
     // 1.「教師會」的安全規則
     // =====================================
+    // 只允許登入系統的管理員（有通過 Firebase Auth 驗證的帳號）讀寫資料。
     
-    // 教師會設定檔
     match /settings/{document=**} {
       allow read: if true;
-      allow write: if false;
+      allow write: if request.auth != null;
     }
 
-    // 教師會報名表單
     match /teacher_association_forms/{formId} {
       allow create: if true;
-      allow read, update, delete: if false;
+      allow read, update, delete: if request.auth != null;
     }
     
     // =====================================
