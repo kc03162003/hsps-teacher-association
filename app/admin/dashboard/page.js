@@ -19,6 +19,7 @@ export default function AdminDashboard() {
   const [newYearInput, setNewYearInput] = useState('');
   const [filterDate, setFilterDate] = useState('');
   const [isAcceptingSubmissions, setIsAcceptingSubmissions] = useState(true);
+  const [deadlineDate, setDeadlineDate] = useState('');
 
   const getFormYear = (f) => typeof f.year === 'object' ? f.year.name : (f.year || '未指定');
 
@@ -38,14 +39,17 @@ export default function AdminDashboard() {
           const settingsDoc = await getDoc(doc(db, 'settings', 'general'));
           let currentYear = '115學年度';
           let currentAccepting = true;
+          let currentDeadline = '';
           if (settingsDoc.exists()) {
             const data = settingsDoc.data();
             if (data.activeYear) currentYear = data.activeYear;
             if (data.isAcceptingSubmissions !== undefined) currentAccepting = data.isAcceptingSubmissions;
+            if (data.deadlineDate) currentDeadline = data.deadlineDate;
           }
           setActiveYear(currentYear);
           setSelectedYear(currentYear);
           setIsAcceptingSubmissions(currentAccepting);
+          setDeadlineDate(currentDeadline);
           
           const q = query(collection(db, 'teacher_association_forms'), orderBy('createdAt', 'desc'));
           const querySnapshot = await getDocs(q);
@@ -105,6 +109,19 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error(err);
       alert('設定失敗');
+    }
+  };
+
+  const handleSetDeadline = async () => {
+    if (authLevel !== 'super') return;
+    try {
+      const { setDoc, doc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+      await setDoc(doc(db, 'settings', 'general'), { deadlineDate: deadlineDate }, { merge: true });
+      alert(`已成功設定自動截止時間為：${deadlineDate ? deadlineDate.replace('T', ' ') : '無(手動)'}`);
+    } catch (err) {
+      console.error(err);
+      alert('設定時間失敗');
     }
   };
 
@@ -358,15 +375,27 @@ export default function AdminDashboard() {
               <input type="text" className="form-input" placeholder="新增學年度 (例如: 115學年度)" value={newYearInput} onChange={e => setNewYearInput(e.target.value)} />
               <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleAddYear}>設定並啟用</button>
             </div>
-            <button 
-              className={`btn ${isAcceptingSubmissions ? 'btn-secondary' : 'btn-primary'}`} 
-              style={{ width: 'auto', whiteSpace: 'nowrap', backgroundColor: isAcceptingSubmissions ? 'var(--error)' : 'var(--success)', borderColor: 'transparent', color: 'white' }}
-              onClick={handleToggleAccepting}
-            >
-              {isAcceptingSubmissions ? '停止接受填寫' : '開放表單填寫'}
-            </button>
+            <div className="flex gap-1 items-center">
+              <label style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>自動截止時間:</label>
+              <input 
+                type="datetime-local" 
+                className="form-input" 
+                value={deadlineDate} 
+                onChange={e => setDeadlineDate(e.target.value)} 
+                style={{ width: 'auto' }}
+              />
+              <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleSetDeadline}>儲存時間</button>
+              
+              <button 
+                className={`btn ${isAcceptingSubmissions ? 'btn-secondary' : 'btn-primary'}`} 
+                style={{ width: 'auto', whiteSpace: 'nowrap', backgroundColor: isAcceptingSubmissions ? 'var(--error)' : 'var(--success)', borderColor: 'transparent', color: 'white', marginLeft: '0.5rem' }}
+                onClick={handleToggleAccepting}
+              >
+                {isAcceptingSubmissions ? '強制停止填寫' : '強制開放填寫'}
+              </button>
+            </div>
           </div>
-          <p className="text-sm mt-1" style={{ opacity: 0.8 }}>設定後，前台表單將自動儲存為此學年度。</p>
+          <p className="text-sm mt-1" style={{ opacity: 0.8 }}>提示：設定「自動截止時間」後，時間一到前台將自動關閉。右側按鈕為強制手動開關。</p>
         </div>
       )}
 

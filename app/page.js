@@ -25,7 +25,12 @@ export default function Home() {
           if (settingsDoc.exists()) {
             const data = settingsDoc.data();
             if (data.activeYear) setActiveYear(data.activeYear);
-            if (data.isAcceptingSubmissions !== undefined) setIsAcceptingSubmissions(data.isAcceptingSubmissions);
+            
+            let isOpen = true;
+            if (data.isAcceptingSubmissions === false) isOpen = false;
+            if (data.deadlineDate && new Date() > new Date(data.deadlineDate)) isOpen = false;
+            
+            setIsAcceptingSubmissions(isOpen);
           }
         }).catch(console.error);
       });
