@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function ReportPage() {
@@ -8,8 +8,14 @@ export default function ReportPage() {
     name: '',
     paidAmount: '',
     accountLastFive: '',
-    transferDate: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0],
+    transferDate: '',
   });
+
+  useEffect(() => {
+    const today = new Date();
+    const localDateString = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+    setFormData(prev => ({ ...prev, transferDate: localDateString }));
+  }, []);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
