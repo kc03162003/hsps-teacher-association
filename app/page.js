@@ -148,12 +148,12 @@ export default function Home() {
   return (
     <div className="container">
       <h1 className="text-center">{activeYear}教師會入會登記</h1>
-      <p className="text-center mb-2" style={{ opacity: 0.8 }}>請填寫以下資料並選擇您要加入的教師會</p>
+      <p className="text-center mb-2" style={{ opacity: 0.8 }}>請填寫以下資料並選擇您要加入的教師會，填寫截止日期:6/25,16:40</p>
       
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-1">
           <div className="form-group">
-            <label className="form-label">單位</label>
+            <label className="form-label">115學年度所屬單位</label>
             <input 
               type="text" 
               name="unit" 
