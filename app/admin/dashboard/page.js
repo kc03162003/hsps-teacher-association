@@ -18,6 +18,7 @@ export default function AdminDashboard() {
   const [selectedYear, setSelectedYear] = useState('');
   const [newYearInput, setNewYearInput] = useState('');
   const [filterDate, setFilterDate] = useState('');
+  const [isAcceptingSubmissions, setIsAcceptingSubmissions] = useState(true);
 
   const getFormYear = (f) => typeof f.year === 'object' ? f.year.name : (f.year || '未指定');
 
@@ -36,11 +37,15 @@ export default function AdminDashboard() {
           // Fetch settings for active year
           const settingsDoc = await getDoc(doc(db, 'settings', 'general'));
           let currentYear = '115學年度';
-          if (settingsDoc.exists() && settingsDoc.data().activeYear) {
-            currentYear = settingsDoc.data().activeYear;
+          let currentAccepting = true;
+          if (settingsDoc.exists()) {
+            const data = settingsDoc.data();
+            if (data.activeYear) currentYear = data.activeYear;
+            if (data.isAcceptingSubmissions !== undefined) currentAccepting = data.isAcceptingSubmissions;
           }
           setActiveYear(currentYear);
           setSelectedYear(currentYear);
+          setIsAcceptingSubmissions(currentAccepting);
           
           const q = query(collection(db, 'teacher_association_forms'), orderBy('createdAt', 'desc'));
           const querySnapshot = await getDocs(q);
@@ -82,6 +87,21 @@ export default function AdminDashboard() {
       }
       setNewYearInput('');
       alert(`已成功設定「${newYearInput}」為目前啟用學年度！\n前台報名將自動切換至此學年度。`);
+    } catch (err) {
+      console.error(err);
+      alert('設定失敗');
+    }
+  };
+
+  const handleToggleAccepting = async () => {
+    if (authLevel !== 'super') return;
+    try {
+      const { setDoc, doc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+      const newValue = !isAcceptingSubmissions;
+      await setDoc(doc(db, 'settings', 'general'), { isAcceptingSubmissions: newValue }, { merge: true });
+      setIsAcceptingSubmissions(newValue);
+      alert(`已${newValue ? '開啟' : '關閉'}表單填寫功能！`);
     } catch (err) {
       console.error(err);
       alert('設定失敗');
@@ -333,9 +353,18 @@ export default function AdminDashboard() {
       {authLevel === 'super' && (
         <div className="alert alert-info mb-2">
           <h3>高階管理功能：目前啟用學年度 [{activeYear}]</h3>
-          <div className="flex gap-1 mt-1">
-            <input type="text" className="form-input" placeholder="新增學年度 (例如: 115學年度)" value={newYearInput} onChange={e => setNewYearInput(e.target.value)} />
-            <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleAddYear}>設定並啟用</button>
+          <div className="flex gap-1 mt-1 items-center justify-between">
+            <div className="flex gap-1">
+              <input type="text" className="form-input" placeholder="新增學年度 (例如: 115學年度)" value={newYearInput} onChange={e => setNewYearInput(e.target.value)} />
+              <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleAddYear}>設定並啟用</button>
+            </div>
+            <button 
+              className={`btn ${isAcceptingSubmissions ? 'btn-secondary' : 'btn-primary'}`} 
+              style={{ width: 'auto', whiteSpace: 'nowrap', backgroundColor: isAcceptingSubmissions ? 'var(--error)' : 'var(--success)', borderColor: 'transparent', color: 'white' }}
+              onClick={handleToggleAccepting}
+            >
+              {isAcceptingSubmissions ? '停止接受填寫' : '開放表單填寫'}
+            </button>
           </div>
           <p className="text-sm mt-1" style={{ opacity: 0.8 }}>設定後，前台表單將自動儲存為此學年度。</p>
         </div>

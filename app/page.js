@@ -16,13 +16,16 @@ export default function Home() {
   const [calculatedFee, setCalculatedFee] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeYear, setActiveYear] = useState('115學年度');
+  const [isAcceptingSubmissions, setIsAcceptingSubmissions] = useState(true);
 
   useEffect(() => {
     import('@/lib/firebase').then(({ db }) => {
       import('firebase/firestore').then(({ doc, getDoc }) => {
         getDoc(doc(db, 'settings', 'general')).then(settingsDoc => {
-          if (settingsDoc.exists() && settingsDoc.data().activeYear) {
-            setActiveYear(settingsDoc.data().activeYear);
+          if (settingsDoc.exists()) {
+            const data = settingsDoc.data();
+            if (data.activeYear) setActiveYear(data.activeYear);
+            if (data.isAcceptingSubmissions !== undefined) setIsAcceptingSubmissions(data.isAcceptingSubmissions);
           }
         }).catch(console.error);
       });
@@ -64,6 +67,7 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isAcceptingSubmissions) return alert('目前表單已截止填寫。');
     if (!formData.unit || !formData.name) return alert('請填寫單位與姓名');
     if (!formData.joinHaishan && !formData.joinNFEU && !formData.joinNTA && !formData.joinNone) {
       return alert('請至少選擇一個選項（加入教師會或不加入）');
@@ -150,63 +154,70 @@ export default function Home() {
       <h1 className="text-center">{activeYear}教師會入會登記</h1>
       <p className="text-center mb-2" style={{ opacity: 0.8 }}>請填寫以下資料並選擇您要加入的教師會，填寫截止日期:6/25,16:40</p>
       
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-1">
-          <div className="form-group">
-            <label className="form-label">115學年度所屬單位</label>
-            <input 
-              type="text" 
-              name="unit" 
-              className="form-input" 
-              placeholder="例如:教務處、自然科、101等"
-              value={formData.unit}
-              onChange={handleChange}
-              required
-            />
+      {!isAcceptingSubmissions ? (
+        <div className="alert alert-error text-center mt-2 mb-2" style={{ backgroundColor: '#fee2e2', borderColor: '#ef4444', color: '#b91c1c' }}>
+          <h3 style={{ margin: '0 0 0.5rem 0', color: '#991b1b' }}>目前表單已截止填寫</h3>
+          <p>表單已關閉，若有任何問題，請洽詢教師會管理員。</p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-1">
+            <div className="form-group">
+              <label className="form-label">115學年度所屬單位</label>
+              <input 
+                type="text" 
+                name="unit" 
+                className="form-input" 
+                placeholder="例如:教務處、自然科、101等"
+                value={formData.unit}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">姓名</label>
+              <input 
+                type="text" 
+                name="name" 
+                className="form-input" 
+                placeholder="請輸入您的真實姓名"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
-          <div className="form-group">
-            <label className="form-label">姓名</label>
-            <input 
-              type="text" 
-              name="name" 
-              className="form-input" 
-              placeholder="請輸入您的真實姓名"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
+
+          <div className="form-group mt-1">
+            <label className="form-label">選擇加入的教師會（可複選）</label>
+            <label className="checkbox-group">
+              <input type="checkbox" name="joinHaishan" checked={formData.joinHaishan} onChange={handleChange} />
+              <span>海山國小校教師會（會費200元）</span>
+            </label>
+            <label className="checkbox-group">
+              <input type="checkbox" name="joinNTA" checked={formData.joinNTA} onChange={handleChange} />
+              <span>全教總（全教總+新北教產+市教師會）（會費1000元）</span>
+            </label>
+            <label className="checkbox-group">
+              <input type="checkbox" name="joinNFEU" checked={formData.joinNFEU} onChange={handleChange} />
+              <span>全教產（全教產+雙北教產）（會費200元）</span>
+            </label>
+            <label className="checkbox-group" style={{ marginTop: '0.5rem', borderStyle: 'dashed' }}>
+              <input type="checkbox" name="joinNone" checked={formData.joinNone} onChange={handleChange} />
+              <span>不加入任何教師會 (0元)</span>
+            </label>
           </div>
-        </div>
 
-        <div className="form-group mt-1">
-          <label className="form-label">選擇加入的教師會（可複選）</label>
-          <label className="checkbox-group">
-            <input type="checkbox" name="joinHaishan" checked={formData.joinHaishan} onChange={handleChange} />
-            <span>海山國小校教師會（會費200元）</span>
-          </label>
-          <label className="checkbox-group">
-            <input type="checkbox" name="joinNTA" checked={formData.joinNTA} onChange={handleChange} />
-            <span>全教總（全教總+新北教產+市教師會）（會費1000元）</span>
-          </label>
-          <label className="checkbox-group">
-            <input type="checkbox" name="joinNFEU" checked={formData.joinNFEU} onChange={handleChange} />
-            <span>全教產（全教產+雙北教產）（會費200元）</span>
-          </label>
-          <label className="checkbox-group" style={{ marginTop: '0.5rem', borderStyle: 'dashed' }}>
-            <input type="checkbox" name="joinNone" checked={formData.joinNone} onChange={handleChange} />
-            <span>不加入任何教師會 (0元)</span>
-          </label>
-        </div>
+          <div className="alert alert-info flex justify-between items-center mb-2">
+            <span>應繳總費用：</span>
+            <span className="text-2xl font-bold">{calculatedFee} 元</span>
+          </div>
 
-        <div className="alert alert-info flex justify-between items-center mb-2">
-          <span>應繳總費用：</span>
-          <span className="text-2xl font-bold">{calculatedFee} 元</span>
-        </div>
-
-        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? '處理中...' : '送出登記資料'}
-        </button>
-      </form>
+          <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+            {isSubmitting ? '處理中...' : '送出登記資料'}
+          </button>
+        </form>
+      )}
     </div>
   );
 }

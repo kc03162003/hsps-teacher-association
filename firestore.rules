@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // =====================================
+    // 1.「教師會」的安全規則
+    // =====================================
+    
+    // 教師會設定檔
+    match /settings/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // 教師會報名表單
+    match /teacher_association_forms/{formId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+    
+    // =====================================
+    // 2.「太陽帝國的黃金密碼」的安全規則
+    // =====================================
+    
+    // 遊戲需要讀取排行榜、新增通關紀錄，以及老師從網頁執行刪除
+    match /leaderboard/{docId} {
+      // 允許讀取排行榜和上傳新成績
+      allow read, create: if true;
+      // 允許網頁前端執行刪除 (因為您的刪除功能是做在網頁上輸入密碼)
+      // 禁止任意修改已存在的成績
+      allow delete: if true;
+      allow update: if false;
+    }
+
+    // =====================================
+    // 3. 其他所有未知的資料庫 (全面封鎖保護)
+    // =====================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
