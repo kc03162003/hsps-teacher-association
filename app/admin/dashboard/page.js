@@ -376,7 +376,7 @@ export default function AdminDashboard() {
               <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleAddYear}>設定並啟用</button>
             </div>
             <div className="flex gap-1 items-center">
-              <label style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>自動截止時間:</label>
+              <label style={{ fontSize: '0.9rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>自動截止時間:</label>
               <input 
                 type="datetime-local" 
                 className="form-input" 
