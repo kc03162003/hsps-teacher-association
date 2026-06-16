@@ -588,7 +588,11 @@ export default function AdminDashboard() {
                   <td>{form.totalFee}</td>
                   <td>
                     {form.paidAmount ? (
-                      <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>{form.paidAmount}</span>
+                      <div className="flex flex-col items-start gap-1">
+                        <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>{form.paidAmount}</span>
+                        {form.paymentReportSource === 'USER' && <span style={{fontSize:'10px', color:'#059669', background:'#ecfdf5', padding:'2px 4px', borderRadius:'4px'}}>🙋‍♀️自行回報</span>}
+                        {form.paymentReportSource === 'ADMIN' && <span style={{fontSize:'10px', color:'#2563eb', background:'#eff6ff', padding:'2px 4px', borderRadius:'4px'}}>👨‍💻管理員</span>}
+                      </div>
                     ) : (
                       <span style={{ color: 'var(--error)' }}>{form.totalFee === 0 ? '-' : '尚未繳費'}</span>
                     )}
