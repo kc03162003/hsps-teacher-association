@@ -274,7 +274,7 @@ export default function ReportPage() {
               type="number" 
               name="paidAmount" 
               className="form-input" 
-              placeholder="例如：1400"
+              placeholder="例如：1200"
               value={formData.paidAmount}
               onChange={handleChange}
               required
