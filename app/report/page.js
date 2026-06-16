@@ -139,6 +139,11 @@ export default function ReportPage() {
   const handlePrintReceipt = () => {
     if (!searchResult) return;
     const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('您的瀏覽器封鎖了彈出視窗，請允許「開啟彈出視窗」後再試一次！');
+      return;
+    }
+    
     printWindow.document.write(`
       <html>
         <head>
@@ -179,13 +184,14 @@ export default function ReportPage() {
               <p>列印日期：${new Date().toLocaleDateString('zh-TW')}</p>
             </div>
           </div>
-          <script>
-            window.onload = function() { window.print(); window.close(); }
-          </script>
         </body>
       </html>
     `);
     printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
   };
 
   return (
