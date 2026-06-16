@@ -63,7 +63,7 @@ export default function Home() {
       let fee = 0;
       if (newData.joinHaishan) fee += 200;
       if (newData.joinNTA) fee += 1000; // 全教總
-      if (newData.joinNFEU) fee += 200; // 全教產
+      // if (newData.joinNFEU) fee += 200; // 全教產 (改為不收費)
       setCalculatedFee(fee);
       
       return newData;
@@ -145,9 +145,13 @@ export default function Home() {
             </p>
             <Link href="/report" className="btn btn-primary mt-2" style={{ display: 'inline-block' }}>前往回報繳費</Link>
           </>
-        ) : (
+        ) : formData.joinNone ? (
           <div className="alert alert-success mt-1 mb-2">
             您選擇不加入任何教師會，手續已完成。感謝您的填寫！
+          </div>
+        ) : (
+          <div className="alert alert-success mt-1 mb-2">
+            登記成功！您選擇加入的組織目前無須繳納會費，入會手續已完成！感謝您的填寫！
           </div>
         )}
       </div>
@@ -205,7 +209,7 @@ export default function Home() {
             </label>
             <label className="checkbox-group">
               <input type="checkbox" name="joinNFEU" checked={formData.joinNFEU} onChange={handleChange} />
-              <span>全教產（全教產+雙北教產）（會費200元）</span>
+              <span>全教產（全教產+雙北教產）（免會費）</span>
             </label>
             <label className="checkbox-group" style={{ marginTop: '0.5rem', borderStyle: 'dashed' }}>
               <input type="checkbox" name="joinNone" checked={formData.joinNone} onChange={handleChange} />

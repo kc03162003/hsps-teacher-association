@@ -46,6 +46,12 @@ export default function ReportPage() {
       } else {
         const userData = querySnapshot.docs[0].data();
         
+        if (userData.totalFee === 0) {
+          alert('您的登記總金額為 0 元，無須匯款，也不需要填寫此回報表單喔！');
+          setIsSearching(false);
+          return;
+        }
+
         let associations = [];
         if (userData.joinHaishan) associations.push('海山校教師會');
         if (userData.joinNFEU) associations.push('全教產');
@@ -89,9 +95,14 @@ export default function ReportPage() {
         return;
       }
 
-      // Update the first matching document (assuming name is unique enough for this simple app)
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data();
+
+      if (userData.totalFee === 0) {
+        alert('您的登記總金額為 0 元，無須匯款，也不需要填寫此回報表單喔！');
+        setIsSubmitting(false);
+        return;
+      }
 
       // Check if the paid amount matches the registered total fee
       if (parseInt(formData.paidAmount) !== userData.totalFee) {

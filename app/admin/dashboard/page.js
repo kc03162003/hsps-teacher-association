@@ -348,7 +348,7 @@ export default function AdminDashboard() {
     if (filterDate && f.transferDate !== filterDate) return false;
 
     // Apply type filter
-    if (filter === 'UNPAID' && (f.paidAmount === null || f.paidAmount < f.totalFee)) return true;
+    if (filter === 'UNPAID' && f.totalFee > 0 && (f.paidAmount === null || f.paidAmount < f.totalFee)) return true;
     if (filter === 'HAISHAN' && f.joinHaishan) return true;
     if (filter === 'NFEU' && f.joinNFEU) return true;
     if (filter === 'NTA' && f.joinNTA) return true;
@@ -358,7 +358,7 @@ export default function AdminDashboard() {
     if (searchQuery) {
       return f.name.includes(searchQuery) || f.unit.includes(searchQuery);
     }
-    return filter === 'ALL' || (filter === 'UNPAID' && (f.paidAmount === null || f.paidAmount < f.totalFee));
+    return filter === 'ALL' || (filter === 'UNPAID' && f.totalFee > 0 && (f.paidAmount === null || f.paidAmount < f.totalFee));
   });
 
   const totalCount = filteredForms.length;
