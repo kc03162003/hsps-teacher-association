@@ -11,6 +11,8 @@ export default function ReportPage() {
     transferDate: '',
   });
 
+  const [showBankInfo, setShowBankInfo] = useState(false);
+
   useEffect(() => {
     const today = new Date();
     const localDateString = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
@@ -182,6 +184,22 @@ export default function ReportPage() {
       <div className="mb-2" style={{ opacity: 0.8, lineHeight: '1.8', background: 'rgba(0,0,0,0.02)', padding: '1rem', borderRadius: '8px' }}>
         <p style={{ margin: 0 }}>1. 如不確定您上次填寫的內容，請輸入姓名，按「查詢登記資訊」。</p>
         <p style={{ margin: 0 }}>2. 如已確定您上次填寫內容，請輸入姓名後，直接填寫金額與帳號後五碼，按「送出回報」。</p>
+        <div style={{ marginTop: '0.5rem' }}>
+          <button 
+            type="button" 
+            onClick={() => setShowBankInfo(!showBankInfo)}
+            style={{ padding: '0.3rem 0.8rem', fontSize: '0.9rem', backgroundColor: '#e2e8f0', border: 'none', borderRadius: '4px', cursor: 'pointer', color: '#1e293b' }}
+          >
+            {showBankInfo ? '隱藏匯款帳號' : '查詢匯款帳號'}
+          </button>
+          
+          {showBankInfo && (
+            <div style={{ marginTop: '0.5rem', padding: '0.8rem', backgroundColor: '#fffbeb', borderLeft: '4px solid #f59e0b', borderRadius: '4px', color: '#b45309' }}>
+              <strong>銀行代碼：</strong> 中國信託 (822)<br/>
+              <strong>匯款帳號：</strong> <span style={{fontSize: '1.1rem', letterSpacing: '1px', fontWeight: 'bold'}}>820540069862</span>
+            </div>
+          )}
+        </div>
       </div>
       
       <form onSubmit={handleSubmit}>
