@@ -8,7 +8,6 @@ export default function Home() {
     unit: '',
     name: '',
     joinHaishan: false,
-    joinNFEU: false,
     joinNTA: false,
     joinNone: false,
   });
@@ -46,7 +45,6 @@ export default function Home() {
       if (type === 'checkbox') {
         if (name === 'joinNone' && checked) {
           newData.joinHaishan = false;
-          newData.joinNFEU = false;
           newData.joinNTA = false;
           newData.joinNone = true;
         } else if (name !== 'joinNone' && checked) {
@@ -63,7 +61,6 @@ export default function Home() {
       let fee = 0;
       if (newData.joinHaishan) fee += 200;
       if (newData.joinNTA) fee += 1000; // 全教總
-      // if (newData.joinNFEU) fee += 200; // 全教產 (改為不收費)
       setCalculatedFee(fee);
       
       return newData;
@@ -74,7 +71,7 @@ export default function Home() {
     e.preventDefault();
     if (!isAcceptingSubmissions) return alert('目前表單已截止填寫。');
     if (!formData.unit || !formData.name) return alert('請填寫單位與姓名');
-    if (!formData.joinHaishan && !formData.joinNFEU && !formData.joinNTA && !formData.joinNone) {
+    if (!formData.joinHaishan && !formData.joinNTA && !formData.joinNone) {
       return alert('請至少選擇一個選項（加入教師會或不加入）');
     }
     
@@ -107,7 +104,6 @@ export default function Home() {
         unit: formData.unit,
         name: formData.name,
         joinHaishan: formData.joinHaishan,
-        joinNFEU: formData.joinNFEU,
         joinNTA: formData.joinNTA,
         joinNone: formData.joinNone,
         totalFee: calculatedFee,
@@ -206,10 +202,6 @@ export default function Home() {
             <label className="checkbox-group">
               <input type="checkbox" name="joinNTA" checked={formData.joinNTA} onChange={handleChange} />
               <span>全教總（全教總+新北教產+市教師會）（會費1000元）</span>
-            </label>
-            <label className="checkbox-group">
-              <input type="checkbox" name="joinNFEU" checked={formData.joinNFEU} onChange={handleChange} />
-              <span>全教產（全教產+雙北教產）（免會費）</span>
             </label>
             <label className="checkbox-group" style={{ marginTop: '0.5rem', borderStyle: 'dashed' }}>
               <input type="checkbox" name="joinNone" checked={formData.joinNone} onChange={handleChange} />

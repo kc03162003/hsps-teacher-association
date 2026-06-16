@@ -209,7 +209,6 @@ export default function AdminDashboard() {
         unit: editingForm.unit,
         name: editingForm.name,
         joinHaishan: editingForm.joinHaishan,
-        joinNFEU: editingForm.joinNFEU,
         joinNTA: editingForm.joinNTA,
         joinNone: editingForm.joinNone,
         totalFee: parseInt(editingForm.totalFee) || 0,
@@ -316,15 +315,14 @@ export default function AdminDashboard() {
   };
 
   const handleExport = () => {
-    const headers = ['ID', '學年度', '單位', '姓名', '海山校教師會', '全教產', '全教總', '不加入', '應繳金額', '已繳金額', '匯款日期', '帳號後五碼', '登記時間'];
+    const headers = ['ID', '學年度', '單位', '姓名', '海山校教師會', '全教總', '不加入', '應繳金額', '已繳金額', '匯款日期', '帳號後五碼', '登記時間'];
     const csvContent = [
       headers.join(','),
       ...filteredForms.map(f => [
         f.id, f.year?.name || f.year || '', f.unit, f.name, 
         f.joinHaishan ? '是' : '否', 
-        f.joinNFEU ? '是' : '否', 
         f.joinNTA ? '是' : '否', 
-        (!f.joinHaishan && !f.joinNFEU && !f.joinNTA) ? '是' : '否',
+        (!f.joinHaishan && !f.joinNTA) ? '是' : '否',
         f.totalFee, f.paidAmount || 0, f.transferDate || '', f.accountLastFive || '',
         new Date(f.createdAt).toLocaleString()
       ].join(','))
@@ -350,9 +348,8 @@ export default function AdminDashboard() {
     // Apply type filter
     if (filter === 'UNPAID' && f.totalFee > 0 && (f.paidAmount === null || f.paidAmount < f.totalFee)) return true;
     if (filter === 'HAISHAN' && f.joinHaishan) return true;
-    if (filter === 'NFEU' && f.joinNFEU) return true;
     if (filter === 'NTA' && f.joinNTA) return true;
-    if (filter !== 'ALL' && filter !== 'UNPAID' && filter !== 'HAISHAN' && filter !== 'NFEU' && filter !== 'NTA') return false;
+    if (filter !== 'ALL' && filter !== 'UNPAID' && filter !== 'HAISHAN' && filter !== 'NTA') return false;
     
     // Apply search query
     if (searchQuery) {
@@ -492,7 +489,6 @@ export default function AdminDashboard() {
             <option value="ALL">全部名單</option>
             <option value="UNPAID">未繳費名單</option>
             <option value="HAISHAN">海山校教師會</option>
-            <option value="NFEU">全教產</option>
             <option value="NTA">全教總</option>
           </select>
         </div>
@@ -525,7 +521,6 @@ export default function AdminDashboard() {
               <label className="form-label">參與組織</label>
               <div className="flex gap-1" style={{ flexWrap: 'wrap' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><input type="checkbox" checked={editingForm.joinHaishan} onChange={e => setEditingForm({...editingForm, joinHaishan: e.target.checked})} style={{ width: '1rem', height: '1rem' }} /> 海山</label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><input type="checkbox" checked={editingForm.joinNFEU} onChange={e => setEditingForm({...editingForm, joinNFEU: e.target.checked})} style={{ width: '1rem', height: '1rem' }} /> 全教產</label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><input type="checkbox" checked={editingForm.joinNTA} onChange={e => setEditingForm({...editingForm, joinNTA: e.target.checked})} style={{ width: '1rem', height: '1rem' }} /> 全教總</label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><input type="checkbox" checked={editingForm.joinNone} onChange={e => setEditingForm({...editingForm, joinNone: e.target.checked})} style={{ width: '1rem', height: '1rem' }} /> 不加入</label>
               </div>
@@ -585,9 +580,8 @@ export default function AdminDashboard() {
                   <td>
                     <div className="flex gap-1 text-sm">
                       {form.joinHaishan && <span className="alert-info" style={{padding: '2px 6px', borderRadius: '4px'}}>海山</span>}
-                      {form.joinNFEU && <span className="alert-success" style={{padding: '2px 6px', borderRadius: '4px'}}>全教產</span>}
                       {form.joinNTA && <span className="alert-error" style={{padding: '2px 6px', borderRadius: '4px'}}>全教總</span>}
-                      {(!form.joinHaishan && !form.joinNFEU && !form.joinNTA) && <span style={{padding: '2px 6px', borderRadius: '4px', background: 'rgba(0,0,0,0.05)'}}>無</span>}
+                      {(!form.joinHaishan && !form.joinNTA) && <span style={{padding: '2px 6px', borderRadius: '4px', background: 'rgba(0,0,0,0.05)'}}>無</span>}
                     </div>
                   </td>
                   <td>{form.totalFee}</td>

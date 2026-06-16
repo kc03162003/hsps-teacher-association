@@ -54,7 +54,6 @@ export default function ReportPage() {
 
         let associations = [];
         if (userData.joinHaishan) associations.push('海山校教師會');
-        if (userData.joinNFEU) associations.push('全教產');
         if (userData.joinNTA) associations.push('全教總');
         if (userData.joinNone) associations.push('不加入任何教師會');
 
