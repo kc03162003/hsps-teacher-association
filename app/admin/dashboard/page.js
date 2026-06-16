@@ -214,7 +214,8 @@ export default function AdminDashboard() {
         totalFee: parseInt(editingForm.totalFee) || 0,
         paidAmount: editingForm.paidAmount === '' || editingForm.paidAmount === null ? null : parseInt(editingForm.paidAmount),
         transferDate: editingForm.transferDate || '',
-        accountLastFive: editingForm.accountLastFive || ''
+        accountLastFive: editingForm.accountLastFive || '',
+        paymentReportSource: editingForm.paidAmount ? (editingForm.paymentReportSource || 'ADMIN') : null
       };
 
       await updateDoc(doc(db, 'teacher_association_forms', editingForm.id), payload);

@@ -113,7 +113,9 @@ export default function ReportPage() {
       await updateDoc(doc(db, 'teacher_association_forms', userDoc.id), {
         paidAmount: parseInt(formData.paidAmount),
         accountLastFive: formData.accountLastFive,
-        transferDate: formData.transferDate
+        transferDate: formData.transferDate,
+        paymentReportSource: 'USER',
+        reportedAt: new Date().toISOString()
       });
       
       setSubmitted(true);
