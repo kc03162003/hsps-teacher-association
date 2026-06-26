@@ -242,13 +242,19 @@ export default function AdminDashboard() {
       '四年級': [],
       '五年級': [],
       '六年級': [],
-      '科任': []
+      '科任': [],
+      '幼兒園': [],
+      '職務未定': []
     };
 
     ballotMembers.forEach(f => {
       const s = f.unit ? f.unit.toString() : '';
       if (/教務|學務|輔導|總務|人事|會計|校長|行政/.test(s)) {
         groups['行政'].push(f);
+      } else if (/幼兒園|附幼|幼稚園/.test(s)) {
+        groups['幼兒園'].push(f);
+      } else if (/未定|職務未定/.test(s) || s.trim() === '') {
+        groups['職務未定'].push(f);
       } else if (/([1-6])\d{2}/.test(s)) {
         const matchNum = s.match(/([1-6])\d{2}/);
         const grades = ['一', '二', '三', '四', '五', '六'];
@@ -264,7 +270,7 @@ export default function AdminDashboard() {
       }
     });
 
-    const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任'];
+    const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任', '幼兒園'];
     const groupsHtml = order.map(cat => {
       if (groups[cat].length === 0) return '';
       groups[cat].sort((a, b) => a.unit.localeCompare(b.unit) || a.name.localeCompare(b.name));
@@ -288,6 +294,29 @@ export default function AdminDashboard() {
              '</div>';
     }).join('');
 
+    let bottomRowHtml = '';
+    if (groups['職務未定'] && groups['職務未定'].length > 0) {
+      groups['職務未定'].sort((a, b) => (a.unit || '').localeCompare(b.unit || '') || a.name.localeCompare(b.name));
+      
+      const membersHtml = groups['職務未定'].map(f => 
+        '<div class="member-item horizontal-item">' +
+          '<div class="member-info">' +
+            '<span style="font-weight: bold;">' + f.name + '</span>' +
+            '<span class="unit-label">' + (f.unit || '未定') + '</span>' +
+          '</div>' +
+          '<div class="checkbox-group">' +
+            '理<div class="checkbox"></div>' +
+            '監<div class="checkbox"></div>' +
+          '</div>' +
+        '</div>'
+      ).join('');
+
+      bottomRowHtml = '<div class="category-box bottom-row">' +
+                        '<div class="category-title" style="text-align: left; padding-left: 5px;">職務未定 (' + groups['職務未定'].length + '人)</div>' +
+                        '<div class="horizontal-members">' + membersHtml + '</div>' +
+                      '</div>';
+    }
+
     const htmlContent = '<!DOCTYPE html><html><head><title>' + activeYear + ' 理監事選票</title>' +
       '<style>' +
         'body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 10px; color: #000; font-size: 11px; } ' +
@@ -301,6 +330,10 @@ export default function AdminDashboard() {
         '.checkbox-group { display: flex; align-items: center; gap: 2px; font-size: 10px; font-weight: bold; } ' +
         '.checkbox { width: 12px; height: 12px; border: 1px solid #000; display: inline-block; margin-right: 2px; } ' +
         '.unit-label { font-size: 9px; color: #555; } ' +
+        '.horizontal-members { display: flex; flex-wrap: wrap; gap: 10px; padding: 2px 4px; } ' +
+        '.horizontal-item { border-bottom: none; margin-bottom: 0; border-right: 1px dashed #999; padding-right: 10px; width: auto; flex: 0 0 auto; } ' +
+        '.horizontal-item:last-child { border-right: none; } ' +
+        '.bottom-row { margin-top: 5px; page-break-inside: avoid; } ' +
         '@media print { ' +
           '@page { size: A4 landscape; margin: 8mm; } ' +
           'body { margin: 0; padding: 0; } ' +
@@ -310,7 +343,9 @@ export default function AdminDashboard() {
       '<div class="subtitle">請在欲票選的候選人右側方格內打勾 (應選理事 11 人、監事 3 人)</div>' +
       '<div class="grid-container">' +
       groupsHtml +
-      '</div></body></html>';
+      '</div>' +
+      bottomRowHtml +
+      '</body></html>';
 
     const printWindow = window.open('', '_blank');
     printWindow.document.write(htmlContent);
