@@ -209,25 +209,35 @@ export default function AdminDashboard() {
       const originalForm = forms.find(f => f.id === editingForm.id);
       const isPaymentChanged = editingForm.paidAmount !== originalForm.paidAmount || editingForm.accountLastFive !== originalForm.accountLastFive || editingForm.transferDate !== originalForm.transferDate;
       
+      let parsedPaid = parseInt(editingForm.paidAmount);
+      if (isNaN(parsedPaid)) parsedPaid = null;
+
       const payload = {
-        unit: editingForm.unit,
-        name: editingForm.name,
-        joinHaishan: editingForm.joinHaishan,
-        joinNTA: editingForm.joinNTA,
-        joinNone: editingForm.joinNone,
+        unit: editingForm.unit || '',
+        name: editingForm.name || '',
+        joinHaishan: !!editingForm.joinHaishan,
+        joinNTA: !!editingForm.joinNTA,
+        joinNone: !!editingForm.joinNone,
         totalFee: parseInt(editingForm.totalFee) || 0,
-        paidAmount: editingForm.paidAmount === '' || editingForm.paidAmount === null ? null : parseInt(editingForm.paidAmount),
+        paidAmount: parsedPaid,
         transferDate: editingForm.transferDate || '',
         accountLastFive: editingForm.accountLastFive || '',
-        paymentReportSource: editingForm.paidAmount ? (isPaymentChanged ? 'ADMIN' : editingForm.paymentReportSource) : null
+        paymentReportSource: parsedPaid !== null ? (isPaymentChanged ? 'ADMIN' : (editingForm.paymentReportSource || null)) : null
       };
+
+      // 確保沒有 undefined 或 NaN 混入 (Firestore 會報錯)
+      Object.keys(payload).forEach(key => {
+        if (payload[key] === undefined || Number.isNaN(payload[key])) {
+          payload[key] = null;
+        }
+      });
 
       await updateDoc(doc(db, 'teacher_association_forms', editingForm.id), payload);
       setForms(prev => prev.map(f => f.id === editingForm.id ? { ...f, ...payload } : f));
       setEditingForm(null);
     } catch (error) {
       console.error(error);
-      alert('儲存失敗');
+      alert('儲存失敗：' + error.message);
     }
   };
 
@@ -249,10 +259,10 @@ export default function AdminDashboard() {
 
     ballotMembers.forEach(f => {
       const s = f.unit ? f.unit.toString() : '';
-      if (/教務|學務|輔導|總務|人事|會計|校長|行政/.test(s)) {
-        groups['行政'].push(f);
-      } else if (/幼兒園|附幼|幼稚園/.test(s)) {
+      if (/幼兒|附幼|幼稚園|幼教|教保/.test(s)) {
         groups['幼兒園'].push(f);
+      } else if (/教務|學務|輔導|總務|人事|會計|校長|行政/.test(s)) {
+        groups['行政'].push(f);
       } else if (/未定|職務未定/.test(s) || s.trim() === '') {
         groups['職務未定'].push(f);
       } else if (/([1-6])\d{2}/.test(s)) {
