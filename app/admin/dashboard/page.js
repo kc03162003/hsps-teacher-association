@@ -341,8 +341,7 @@ export default function AdminDashboard() {
 
     const htmlContent = '<!DOCTYPE html><html><head><title>' + activeYear + ' 理監事選票</title>' +
       '<style>' +
-        'body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 10px; color: #000; font-size: 11px; } ' +
-        'body::before { content: ""; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: 60%; background-image: url("/hsps-teacher-association/logo.png"); background-size: contain; background-repeat: no-repeat; background-position: center; opacity: 0.12; z-index: -1; pointer-events: none; } ' +
+        'body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 10px; color: #000; font-size: 11px; position: relative; } ' +
         'h1 { text-align: center; margin-bottom: 5px; font-size: 20px; line-height: 1.2; letter-spacing: 2px; } ' +
         '.subtitle { text-align: center; margin-bottom: 12px; font-size: 14px; font-weight: bold; } ' +
         '.grid-container { column-count: 7; column-gap: 8px; width: 100%; } ' +
@@ -362,6 +361,7 @@ export default function AdminDashboard() {
           'body { margin: 0; padding: 0; } ' +
         '} ' +
       '</style></head><body>' +
+      '<img src="/hsps-teacher-association/logo.png" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; opacity: 0.12; z-index: -1; pointer-events: none;" />' +
       '<h1>' + activeYear + ' 海山國小校教師會理監事選票</h1>' +
       '<div class="subtitle">請在欲票選的候選人右側方格內打勾 (應選理事 11 人、監事 3 人)<br><span style="border: 1.5px solid #000; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; font-size: 13px;">⚠️ 注意：同一位候選人【不可】同時勾選「理事」與「監事」，否則該人選計票無效。</span></div>' +
       '<div class="grid-container">' +
