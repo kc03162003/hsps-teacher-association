@@ -253,7 +253,6 @@ export default function AdminDashboard() {
       '五年級': [],
       '六年級': [],
       '科任': [],
-      '英文科': [],
       '幼兒園': [],
       '職務未定': []
     };
@@ -265,7 +264,7 @@ export default function AdminDashboard() {
       } else if (/專輔|專任輔導/.test(s)) {
         groups['科任'].push(f);
       } else if (/英文/.test(s)) {
-        groups['英文科'].push(f);
+        groups['科任'].push(f);
       } else if (/教務|學務|輔導|總務|人事|會計|校長|行政/.test(s)) {
         groups['行政'].push(f);
       } else if (/未定|職務未定/.test(s) || s.trim() === '') {
@@ -285,10 +284,21 @@ export default function AdminDashboard() {
       }
     });
 
-    const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任', '英文科', '幼兒園'];
+    const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任', '幼兒園'];
     const groupsHtml = order.map(cat => {
       if (groups[cat].length === 0) return '';
-      groups[cat].sort((a, b) => a.unit.localeCompare(b.unit) || a.name.localeCompare(b.name));
+      
+      if (cat === '科任') {
+        groups[cat].sort((a, b) => {
+          const isAEnglish = /英文/.test(a.unit || '');
+          const isBEnglish = /英文/.test(b.unit || '');
+          if (isAEnglish && !isBEnglish) return 1;
+          if (!isAEnglish && isBEnglish) return -1;
+          return (a.unit || '').localeCompare((b.unit || ''), 'zh-TW') || a.name.localeCompare(b.name, 'zh-TW');
+        });
+      } else {
+        groups[cat].sort((a, b) => (a.unit || '').localeCompare((b.unit || ''), 'zh-TW') || a.name.localeCompare(b.name, 'zh-TW'));
+      }
       
       const membersHtml = groups[cat].map(f => 
         '<div class="member-item">' +
