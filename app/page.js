@@ -173,7 +173,7 @@ export default function Home() {
                 type="text" 
                 name="unit" 
                 className="form-input" 
-                placeholder="例如:教務處、自然科、101等"
+                placeholder="例如:教務處、自然科、一年級"
                 value={formData.unit}
                 onChange={handleChange}
                 required
