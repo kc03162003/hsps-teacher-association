@@ -362,7 +362,7 @@ export default function AdminDashboard() {
         '} ' +
       '</style></head><body>' +
       '<h1>' + activeYear + ' 海山國小校教師會理監事選票</h1>' +
-      '<div class="subtitle">請在欲票選的候選人右側方格內打勾 (應選理事 11 人、監事 3 人)</div>' +
+      '<div class="subtitle">請在欲票選的候選人右側方格內打勾 (應選理事 11 人、監事 3 人)<br><span style="border: 1.5px solid #000; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; font-size: 13px;">⚠️ 注意：同一位候選人【不可】同時勾選「理事」與「監事」，否則該人選計票無效。</span></div>' +
       '<div class="grid-container">' +
       groupsHtml +
       '</div>' +
