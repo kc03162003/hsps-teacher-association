@@ -153,7 +153,7 @@ export default function ReportPage() {
           <style>
             body { font-family: 'Microsoft JhengHei', sans-serif; padding: 40px; color: #333; }
             .receipt-box { border: 2px solid #333; padding: 40px; max-width: 600px; margin: 0 auto; position: relative; }
-            .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 100px; color: rgba(0,0,0,0.05); z-index: -1; white-space: nowrap; font-weight: bold; }
+            .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70%; height: 70%; background-image: url("/hsps-teacher-association/logo.png"); background-size: contain; background-repeat: no-repeat; background-position: center; opacity: 0.12; z-index: -1; pointer-events: none; }
             h1 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 30px; letter-spacing: 2px; }
             .row { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 1.2rem; }
             .row.single { justify-content: flex-start; gap: 20px; }
@@ -166,7 +166,7 @@ export default function ReportPage() {
         </head>
         <body>
           <div class="receipt-box">
-            <div class="watermark">海山國小教師會</div>
+            <div class="watermark"></div>
             <h1>海山國小教師會 繳費收據</h1>
             <div class="row">
               <span><strong>單位：</strong> ${searchResult.unit}</span>

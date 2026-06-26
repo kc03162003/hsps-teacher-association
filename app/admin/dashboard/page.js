@@ -342,6 +342,7 @@ export default function AdminDashboard() {
     const htmlContent = '<!DOCTYPE html><html><head><title>' + activeYear + ' 理監事選票</title>' +
       '<style>' +
         'body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 10px; color: #000; font-size: 11px; } ' +
+        'body::before { content: ""; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: 60%; background-image: url("/hsps-teacher-association/logo.png"); background-size: contain; background-repeat: no-repeat; background-position: center; opacity: 0.12; z-index: -1; pointer-events: none; } ' +
         'h1 { text-align: center; margin-bottom: 5px; font-size: 20px; line-height: 1.2; letter-spacing: 2px; } ' +
         '.subtitle { text-align: center; margin-bottom: 12px; font-size: 14px; font-weight: bold; } ' +
         '.grid-container { column-count: 7; column-gap: 8px; width: 100%; } ' +
