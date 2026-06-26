@@ -407,17 +407,19 @@ export default function AdminDashboard() {
     if (selectedYear !== 'ALL' && formYear !== selectedYear) return false;
     if (filterDate && f.transferDate !== filterDate) return false;
 
-    // Apply type filter
-    if (filter === 'UNPAID' && f.totalFee > 0 && (f.paidAmount === null || f.paidAmount < f.totalFee)) return true;
-    if (filter === 'HAISHAN' && f.joinHaishan) return true;
-    if (filter === 'NTA' && f.joinNTA) return true;
-    if (filter !== 'ALL' && filter !== 'UNPAID' && filter !== 'HAISHAN' && filter !== 'NTA') return false;
-    
-    // Apply search query
+    let typeMatch = false;
+    if (filter === 'ALL') typeMatch = true;
+    else if (filter === 'UNPAID') typeMatch = f.totalFee > 0 && (f.paidAmount === null || f.paidAmount < f.totalFee);
+    else if (filter === 'UNRECONCILED') typeMatch = !f.isReconciled;
+    else if (filter === 'HAISHAN') typeMatch = f.joinHaishan;
+    else if (filter === 'NTA') typeMatch = f.joinNTA;
+
+    if (!typeMatch) return false;
+
     if (searchQuery) {
       return f.name.includes(searchQuery) || f.unit.includes(searchQuery);
     }
-    return filter === 'ALL' || (filter === 'UNPAID' && f.totalFee > 0 && (f.paidAmount === null || f.paidAmount < f.totalFee));
+    return true;
   });
 
   const totalCount = filteredForms.length;
@@ -550,6 +552,7 @@ export default function AdminDashboard() {
           <select className="form-input" value={filter} onChange={e => setFilter(e.target.value)} style={{ width: 'auto', minWidth: '130px' }}>
             <option value="ALL">全部名單</option>
             <option value="UNPAID">未繳費名單</option>
+            <option value="UNRECONCILED">未對帳名單</option>
             <option value="HAISHAN">海山校教師會</option>
             <option value="NTA">全教總</option>
           </select>
