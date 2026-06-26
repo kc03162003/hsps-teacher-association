@@ -253,6 +253,7 @@ export default function AdminDashboard() {
       '五年級': [],
       '六年級': [],
       '科任': [],
+      '英文科': [],
       '幼兒園': [],
       '職務未定': []
     };
@@ -261,6 +262,10 @@ export default function AdminDashboard() {
       const s = f.unit ? f.unit.toString() : '';
       if (/幼兒|附幼|幼稚園|幼教|教保/.test(s)) {
         groups['幼兒園'].push(f);
+      } else if (/專輔|專任輔導/.test(s)) {
+        groups['科任'].push(f);
+      } else if (/英文/.test(s)) {
+        groups['英文科'].push(f);
       } else if (/教務|學務|輔導|總務|人事|會計|校長|行政/.test(s)) {
         groups['行政'].push(f);
       } else if (/未定|職務未定/.test(s) || s.trim() === '') {
@@ -280,7 +285,7 @@ export default function AdminDashboard() {
       }
     });
 
-    const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任', '幼兒園'];
+    const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任', '英文科', '幼兒園'];
     const groupsHtml = order.map(cat => {
       if (groups[cat].length === 0) return '';
       groups[cat].sort((a, b) => a.unit.localeCompare(b.unit) || a.name.localeCompare(b.name));
