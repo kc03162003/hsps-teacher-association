@@ -263,7 +263,7 @@ export default function AdminDashboard() {
         groups['幼兒園'].push(f);
       } else if (/專輔|專任輔導/.test(s)) {
         groups['科任'].push(f);
-      } else if (/英文/.test(s)) {
+      } else if (/英文|英語/.test(s)) {
         groups['科任'].push(f);
       } else if (/教務|學務|輔導|總務|人事|會計|校長|行政/.test(s)) {
         groups['行政'].push(f);
@@ -291,8 +291,8 @@ export default function AdminDashboard() {
       
       if (cat === '科任') {
         groups[cat].sort((a, b) => {
-          const isAEnglish = /英文/.test(a.unit || '');
-          const isBEnglish = /英文/.test(b.unit || '');
+          const isAEnglish = /英文|英語/.test(a.unit || '');
+          const isBEnglish = /英文|英語/.test(b.unit || '');
           if (isAEnglish && !isBEnglish) return 1;
           if (!isAEnglish && isBEnglish) return -1;
           return collator.compare(a.unit || '', b.unit || '') || collator.compare(a.name, b.name);
