@@ -314,10 +314,6 @@ export default function AdminDashboard() {
             '<span style="font-weight: bold;">' + f.name + '</span>' +
             '<span class="unit-label">' + (f.unit || '未定') + '</span>' +
           '</div>' +
-          '<div class="checkbox-group">' +
-            '理<div class="checkbox"></div>' +
-            '監<div class="checkbox"></div>' +
-          '</div>' +
         '</div>'
       ).join('');
 
