@@ -287,6 +287,7 @@ export default function AdminDashboard() {
     const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任', '幼兒園'];
     const groupsHtml = order.map(cat => {
       if (groups[cat].length === 0) return '';
+      const collator = new Intl.Collator('zh-TW', { collation: 'stroke' });
       
       if (cat === '科任') {
         groups[cat].sort((a, b) => {
@@ -294,10 +295,10 @@ export default function AdminDashboard() {
           const isBEnglish = /英文/.test(b.unit || '');
           if (isAEnglish && !isBEnglish) return 1;
           if (!isAEnglish && isBEnglish) return -1;
-          return (a.unit || '').localeCompare((b.unit || ''), 'zh-TW') || a.name.localeCompare(b.name, 'zh-TW');
+          return collator.compare(a.unit || '', b.unit || '') || collator.compare(a.name, b.name);
         });
       } else {
-        groups[cat].sort((a, b) => (a.unit || '').localeCompare((b.unit || ''), 'zh-TW') || a.name.localeCompare(b.name, 'zh-TW'));
+        groups[cat].sort((a, b) => collator.compare(a.unit || '', b.unit || '') || collator.compare(a.name, b.name));
       }
       
       const membersHtml = groups[cat].map(f => 
