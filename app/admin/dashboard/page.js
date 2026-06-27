@@ -291,10 +291,16 @@ export default function AdminDashboard() {
       
       if (cat === '科任') {
         groups[cat].sort((a, b) => {
+          const isACounselor = /專輔|專任輔導/.test(a.unit || '');
+          const isBCounselor = /專輔|專任輔導/.test(b.unit || '');
+          if (isACounselor && !isBCounselor) return 1;
+          if (!isACounselor && isBCounselor) return -1;
+
           const isAEnglish = /英文|英語/.test(a.unit || '');
           const isBEnglish = /英文|英語/.test(b.unit || '');
           if (isAEnglish && !isBEnglish) return 1;
           if (!isAEnglish && isBEnglish) return -1;
+
           return collator.compare(a.unit || '', b.unit || '') || collator.compare(a.name, b.name);
         });
       } else {
