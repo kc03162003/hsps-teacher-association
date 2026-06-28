@@ -340,7 +340,7 @@ export default function AdminDashboard() {
       ).join('');
 
       bottomRowHtml = '<div class="category-box bottom-row">' +
-                        '<div class="category-title" style="text-align: left; padding-left: 5px;">職務未定 (' + groups['職務未定'].length + '人)</div>' +
+                        '<div class="category-title" style="text-align: left; padding-left: 5px;">職務未定 (' + groups['職務未定'].length + '人) <span style="font-size: 9px; font-weight: normal; color: #555; margin-left: 8px;">(依教育部 86 年 5 月 22 日台(86)人(一)字第86049353號函釋:代理教師不具選舉權與被選舉權，留停教師具選舉權與被選舉權)</span></div>' +
                         '<div class="horizontal-members">' + membersHtml + '</div>' +
                       '</div>';
     }
