@@ -350,7 +350,7 @@ export default function AdminDashboard() {
         'body { font-family: "Microsoft JhengHei", "Inter", sans-serif; padding: 10px; color: #000; font-size: 11px; position: relative; } ' +
         'h1 { text-align: center; margin-bottom: 5px; font-size: 20px; line-height: 1.2; letter-spacing: 2px; } ' +
         '.subtitle { text-align: center; margin-bottom: 12px; font-size: 14px; font-weight: bold; } ' +
-        '.grid-container { column-count: 7; column-gap: 8px; width: 100%; } ' +
+        '.grid-container { column-count: 5; column-gap: 8px; width: 100%; } ' +
         '.category-box { border: 1.5px solid #000; padding: 4px; border-radius: 4px; break-inside: avoid; page-break-inside: avoid; margin-bottom: 8px; } ' +
         '.category-title { font-weight: bold; font-size: 12px; border-bottom: 1.5px solid #000; margin-bottom: 4px; padding-bottom: 2px; text-align: center; } ' +
         '.member-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; border-bottom: 1px dashed #999; padding-bottom: 2px; } ' +
