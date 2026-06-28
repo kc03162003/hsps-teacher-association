@@ -284,7 +284,7 @@ export default function AdminDashboard() {
       }
     });
 
-    const order = ['行政', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級', '科任', '幼兒園'];
+    const order = ['行政', '幼兒園', '科任', '一年級', '二年級', '三年級', '四年級', '五年級', '六年級'];
     const groupsHtml = order.map(cat => {
       if (groups[cat].length === 0) return '';
       const collator = new Intl.Collator('zh-TW', { collation: 'stroke' });
