@@ -3,6 +3,21 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+const formatDeadline = (dateStr) => {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const month = d.getMonth() + 1;
+    const date = d.getDate();
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${month}/${date},${hours}:${minutes}`;
+  } catch (e) {
+    return dateStr;
+  }
+};
+
 export default function Home() {
   const [formData, setFormData] = useState({
     unit: '',
@@ -16,6 +31,7 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeYear, setActiveYear] = useState('115學年度');
   const [isAcceptingSubmissions, setIsAcceptingSubmissions] = useState(true);
+  const [deadlineDate, setDeadlineDate] = useState('2026-06-25T16:40');
 
   useEffect(() => {
     import('@/lib/firebase').then(({ db }) => {
@@ -24,6 +40,7 @@ export default function Home() {
           if (settingsDoc.exists()) {
             const data = settingsDoc.data();
             if (data.activeYear) setActiveYear(data.activeYear);
+            if (data.deadlineDate !== undefined) setDeadlineDate(data.deadlineDate || '');
             
             let isOpen = true;
             if (data.isAcceptingSubmissions === false) isOpen = false;
@@ -157,7 +174,7 @@ export default function Home() {
   return (
     <div className="container">
       <h1 className="text-center">{activeYear}教師會入會登記</h1>
-      <p className="text-center mb-2" style={{ opacity: 0.8 }}>請填寫以下資料並選擇您要加入的教師會，填寫截止日期:6/25,16:40</p>
+      <p className="text-center mb-2" style={{ opacity: 0.8 }}>請填寫以下資料並選擇您要加入的教師會{deadlineDate ? `，填寫截止日期:${formatDeadline(deadlineDate)}` : ''}</p>
       
       {!isAcceptingSubmissions ? (
         <div className="alert alert-error text-center mt-2 mb-2" style={{ backgroundColor: '#fee2e2', borderColor: '#ef4444', color: '#b91c1c' }}>
