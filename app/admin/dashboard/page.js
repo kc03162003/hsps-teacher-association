@@ -19,7 +19,6 @@ export default function AdminDashboard() {
   ]);
 
   const exportFields = [
-    { label: 'ID', getValue: (f) => f.id },
     { label: '學年度', getValue: (f) => f.year?.name || f.year || '' },
     { label: '單位', getValue: (f) => f.unit },
     { label: '姓名', getValue: (f) => f.name },
