@@ -382,28 +382,24 @@ export default function AdminDashboard() {
     setTimeout(() => printWindow.print(), 500);
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
+    const XLSX = await import('xlsx');
+    
     const headers = ['ID', '學年度', '單位', '姓名', '海山校教師會', '全教總', '不加入', '應繳金額', '已繳金額', '匯款日期', '帳號後五碼', '登記時間'];
-    const csvContent = [
-      headers.join(','),
-      ...filteredForms.map(f => [
-        f.id, f.year?.name || f.year || '', f.unit, f.name, 
-        f.joinHaishan ? '是' : '否', 
-        f.joinNTA ? '是' : '否', 
-        (!f.joinHaishan && !f.joinNTA) ? '是' : '否',
-        f.totalFee, f.paidAmount || 0, f.transferDate || '', f.accountLastFive || '',
-        new Date(f.createdAt).toLocaleString()
-      ].join(','))
-    ].join('\n');
+    const data = filteredForms.map(f => [
+      f.id, f.year?.name || f.year || '', f.unit, f.name, 
+      f.joinHaishan ? '是' : '否', 
+      f.joinNTA ? '是' : '否', 
+      (!f.joinHaishan && !f.joinNTA) ? '是' : '否',
+      f.totalFee, f.paidAmount || 0, f.transferDate || '', f.accountLastFive || '',
+      new Date(f.createdAt).toLocaleString()
+    ]);
 
-    const blob = new Blob(["\uFEFF"+csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "teacher_association_forms.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "報名名單");
+    
+    XLSX.writeFile(wb, "teacher_association_forms.xlsx");
   };
 
   if (!authLevel) return null;
@@ -566,7 +562,7 @@ export default function AdminDashboard() {
         {authLevel === 'super' && (
           <div className="flex gap-1">
             <button className="btn btn-secondary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handlePrintBallots}>列印選票</button>
-            <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleExport}>匯出 CSV</button>
+            <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleExport}>匯出 EXCEL</button>
           </div>
         )}
       </div>
