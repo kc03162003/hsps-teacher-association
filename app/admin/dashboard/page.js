@@ -422,6 +422,10 @@ export default function AdminDashboard() {
     const data = filteredForms.map(f => orderedSelectedFields.map(field => field.getValue(f)));
 
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+    
+    // 開啟 Excel 篩選功能，套用範圍為整個資料表 (ws['!ref'] 代表資料表的範圍)
+    ws['!autofilter'] = { ref: ws['!ref'] };
+    
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "報名名單");
     
