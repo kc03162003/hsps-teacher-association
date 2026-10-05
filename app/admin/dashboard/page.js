@@ -394,9 +394,9 @@ export default function AdminDashboard() {
         f.totalFee, f.paidAmount || 0, f.transferDate || '', f.accountLastFive || '',
         new Date(f.createdAt).toLocaleString()
       ].join(','))
-    ].join('\\n');
+    ].join('\n');
 
-    const blob = new Blob(["\\uFEFF"+csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(["\uFEFF"+csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
