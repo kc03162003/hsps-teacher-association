@@ -13,6 +13,35 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [editingForm, setEditingForm] = useState(null);
 
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [selectedExportFields, setSelectedExportFields] = useState([
+    '學年度', '單位', '姓名', '海山校教師會', '全教總', '不加入', '應繳金額', '已繳金額', '匯款日期', '帳號後五碼', '登記時間'
+  ]);
+
+  const exportFields = [
+    { label: 'ID', getValue: (f) => f.id },
+    { label: '學年度', getValue: (f) => f.year?.name || f.year || '' },
+    { label: '單位', getValue: (f) => f.unit },
+    { label: '姓名', getValue: (f) => f.name },
+    { label: '海山校教師會', getValue: (f) => f.joinHaishan ? '是' : '否' },
+    { label: '全教總', getValue: (f) => f.joinNTA ? '是' : '否' },
+    { label: '不加入', getValue: (f) => (!f.joinHaishan && !f.joinNTA) ? '是' : '否' },
+    { label: '應繳金額', getValue: (f) => f.totalFee },
+    { label: '已繳金額', getValue: (f) => f.paidAmount || 0 },
+    { label: '匯款日期', getValue: (f) => f.transferDate || '' },
+    { label: '帳號後五碼', getValue: (f) => f.accountLastFive || '' },
+    { label: '對帳狀態', getValue: (f) => f.isReconciled ? '已對帳' : '未對帳' },
+    { label: '登記時間', getValue: (f) => new Date(f.createdAt).toLocaleString() }
+  ];
+
+  const handleExportToggleField = (label) => {
+    setSelectedExportFields(prev => 
+      prev.includes(label) 
+        ? prev.filter(f => f !== label)
+        : [...prev, label]
+    );
+  };
+
   const [activeYear, setActiveYear] = useState('115學年度');
   const [availableYears, setAvailableYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState('');
@@ -382,24 +411,23 @@ export default function AdminDashboard() {
     setTimeout(() => printWindow.print(), 500);
   };
 
-  const handleExport = async () => {
+  const handleExportConfirm = async () => {
+    if (selectedExportFields.length === 0) {
+      alert('請至少選擇一個匯出欄位');
+      return;
+    }
     const XLSX = await import('xlsx');
     
-    const headers = ['ID', '學年度', '單位', '姓名', '海山校教師會', '全教總', '不加入', '應繳金額', '已繳金額', '匯款日期', '帳號後五碼', '登記時間'];
-    const data = filteredForms.map(f => [
-      f.id, f.year?.name || f.year || '', f.unit, f.name, 
-      f.joinHaishan ? '是' : '否', 
-      f.joinNTA ? '是' : '否', 
-      (!f.joinHaishan && !f.joinNTA) ? '是' : '否',
-      f.totalFee, f.paidAmount || 0, f.transferDate || '', f.accountLastFive || '',
-      new Date(f.createdAt).toLocaleString()
-    ]);
+    const orderedSelectedFields = exportFields.filter(f => selectedExportFields.includes(f.label));
+    const headers = orderedSelectedFields.map(f => f.label);
+    const data = filteredForms.map(f => orderedSelectedFields.map(field => field.getValue(f)));
 
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "報名名單");
     
     XLSX.writeFile(wb, "teacher_association_forms.xlsx");
+    setIsExportModalOpen(false);
   };
 
   if (!authLevel) return null;
@@ -562,10 +590,46 @@ export default function AdminDashboard() {
         {authLevel === 'super' && (
           <div className="flex gap-1">
             <button className="btn btn-secondary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handlePrintBallots}>列印選票</button>
-            <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={handleExport}>匯出 EXCEL</button>
+            <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={() => setIsExportModalOpen(true)}>匯出 EXCEL</button>
           </div>
         )}
       </div>
+
+      {/* Export Modal */}
+      {isExportModalOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'
+        }}>
+          <div className="container" style={{ margin: 0, width: '100%', maxWidth: '400px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <h3>選擇匯出欄位</h3>
+            <div className="form-group mt-1">
+              <div className="flex gap-1 mb-2">
+                <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.85rem' }} onClick={() => setSelectedExportFields(exportFields.map(f => f.label))}>全選</button>
+                <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.85rem' }} onClick={() => setSelectedExportFields([])}>全不選</button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                {exportFields.map(field => (
+                  <label key={field.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={selectedExportFields.includes(field.label)}
+                      onChange={() => handleExportToggleField(field.label)}
+                      style={{ width: '1rem', height: '1rem' }}
+                    />
+                    <span>{field.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-1 mt-2">
+              <button className="btn btn-primary" onClick={handleExportConfirm}>確認匯出</button>
+              <button className="btn btn-secondary" onClick={() => setIsExportModalOpen(false)}>取消</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {editingForm && (
